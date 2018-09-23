@@ -2,16 +2,21 @@ package com.aut.watering.server.dto;
 
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.aut.watering.server.enums.AvailableLanguages;
 
 @Entity
 @Table(name = "user")
-
 public class User {
+	
+	@Id
+	@Column(name = "id")
 	private Integer id;
 	private String username;
 	private String password;
@@ -20,8 +25,10 @@ public class User {
 	private String name;
 	private String surname;
 	private AvailableLanguages language;
-	private List<Garden> gardens;
 
+	@OneToMany(mappedBy = "garden")
+	private List<Garden> gardens;
+  
 	@Id
 	public Integer getId() {
 		return id;
@@ -65,6 +72,7 @@ public class User {
 	public void setLanguage(AvailableLanguages language) {
 		this.language = language;
 	}
+
 	public List<Garden> getGardens() {
 		return gardens;
 	}

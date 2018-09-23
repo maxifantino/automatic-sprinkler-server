@@ -10,4 +10,9 @@ public class ServerMessages {
 	public static final String USER_ALREADY_CREATED = "El usuario {1} ya fue creado";
 	public static final String USER_CREATED = "Usuario creado";
 	public static final String USER_CREATION_ERROR = "Error creando usuario. Reintente nuevamente";
+	public static final String GARDEN_NOT_FOUND = "Jardin inexistente";
+	public static final String GARDEN_ERASED = "Jardin eliminado exitosamente";
+	public static final String INTERNAL_ERROR = "Error interno, por favor reintente mas tarde";
+	public static final String GARDEN_CREATED = "El jardin fue creado exitosamente";
+	public static final String SPRINKLER_NOT_FOUND  = "Regador no encontrado";
 }

@@ -1,9 +1,9 @@
 package com.aut.watering.server.service;
 
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.query.Query;
 import org.springframework.stereotype.Service;
 
 import com.aut.watering.server.dto.User;

@@ -4,6 +4,8 @@ import java.text.MessageFormat;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -22,13 +24,15 @@ import com.aut.watering.server.service.UserService;
 public class UserController {
 	@Autowired
 	private UserService userService;
-	
+	final static Logger log = LoggerFactory.getLogger(UserController.class);
+
 	@RequestMapping( consumes = "application/json", produces = "application/json", value = "/user/login")
 	@ResponseBody
 	public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest){
 		HttpResponseBuilder responseBuilder = new HttpResponseBuilder();
 		String token;
 		int status;
+		log.info ("User: " + loginRequest.toString());
 		if (userService.validateLogin(loginRequest)){
 			token = userService.login(loginRequest);
 			if (StringUtils.isNotBlank(token)){
@@ -47,7 +51,8 @@ public class UserController {
 			responseBuilder.withHttpCode(HttpStatus.SC_BAD_REQUEST)
 			.withMessage(ServerMessages.USERNAME_PWD_BLANK);	
 		}
-		
+		log.info ("Output: " + responseBuilder.toString());
+			
 		return ResponseEntity.status(status).body(responseBuilder.toString());
 	}
 

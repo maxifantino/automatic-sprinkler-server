@@ -5,8 +5,8 @@ public class Location {
 	private String country;
 	private String city;
 	private String state;
-	private String latitude;
-	private String longitude;
+	private float latitude;
+	private float longitude;
 	public String getId() {
 		return id;
 	}
@@ -31,16 +31,16 @@ public class Location {
 	public void setState(String state) {
 		this.state = state;
 	}
-	public String getLatitude() {
+	public Float getLatitude() {
 		return latitude;
 	}
-	public void setLatitude(String latitude) {
+	public void setLatitude(Float latitude) {
 		this.latitude = latitude;
 	}
-	public String getLongitude() {
+	public Float getLongitude() {
 		return longitude;
 	}
-	public void setLongitude(String longitude) {
+	public void setLongitude(Float longitude) {
 		this.longitude = longitude;
 	}
 	
