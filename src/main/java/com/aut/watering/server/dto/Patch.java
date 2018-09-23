@@ -7,7 +7,8 @@ public class Patch {
 	private float humidityThreshold;
 	private float criticalHumidity;
 	private String type;
-	private int wateringTime;
+	private long wateringTime;
+	private int status;
 	
 	public Integer getId() {
 		return id;
@@ -39,14 +40,16 @@ public class Patch {
 	public void setType(String type) {
 		this.type = type;
 	}
-	public int getWateringTime() {
+	public long getWateringTime() {
 		return wateringTime;
 	}
-	public void setWateringTime(int wateringTime) {
+	public void setWateringTime(long wateringTime) {
 		this.wateringTime = wateringTime;
 	}
-	
-	
-	
-	
+	public int getStatus() {
+		return status;
+	}
+	public void setStatus(int status) {
+		this.status = status;
+	}
 }

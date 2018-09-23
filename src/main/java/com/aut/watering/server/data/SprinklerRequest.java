@@ -6,7 +6,15 @@ public class SprinklerRequest {
 	private Integer humidityThreshold;
 	private Integer humidityCritical;
 	private Long wateringSeconds;
+	private String type;
+	private Integer status;
 	
+	public Integer getStatus() {
+		return status;
+	}
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
 	public String getPatchCode() {
 		return patchCode;
 	}
@@ -30,6 +38,12 @@ public class SprinklerRequest {
 	}
 	public void setWateringSeconds(Long wateringSeconds) {
 		this.wateringSeconds = wateringSeconds;
+	}
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
 	}
 	
 }
