@@ -1,6 +1,6 @@
 package com.aut.watering.server.builder;
 
-import com.aut.watering.server.data.Location;
+import com.aut.watering.server.dto.Location;
 
 public class LocationBuilder {
 
@@ -11,17 +11,12 @@ public class LocationBuilder {
 	}
 	
 	public LocationBuilder withLatitude(String latitude){
-		location.setLatitude(Float.valueOf(latitude));
+		location.setLatitude(Double.valueOf(latitude));
 		return this;
 	}	
 
 	public LocationBuilder withLongitude(String logitude){
-		location.setLongitude(Float.valueOf(logitude));
-		return this;
-	}	
-
-	public LocationBuilder withState(String state){
-		location.setState(state);
+		location.setLongitude(Double.valueOf(logitude));
 		return this;
 	}	
 
@@ -32,6 +27,11 @@ public class LocationBuilder {
 	
 	public LocationBuilder withCountry(String country){
 		location.setCountry(country);
+		return this;
+	}
+	
+	public LocationBuilder withAddress(String address){
+		location.setAddress(address);
 		return this;
 	}
 	

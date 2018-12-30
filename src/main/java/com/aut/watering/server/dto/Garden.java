@@ -1,6 +1,7 @@
 package com.aut.watering.server.dto;
 
 
+import java.io.Serializable;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -9,17 +10,17 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.aut.watering.server.data.Location;
 
 @Entity
 @Table(name = "garden")
-public class Garden {
-	
-	@ManyToOne(fetch=FetchType.LAZY)
+public class Garden implements Serializable{
+
+	private static final long serialVersionUID = 3790456144218880847L;
+
+	@ManyToOne
 	@JoinColumn(name="user_id")
 	private User user;
 	
@@ -28,9 +29,11 @@ public class Garden {
 	private Integer id;
 	private String name;
 
-	@OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "location_id", nullable = false)
+	@ManyToOne(fetch=FetchType.LAZY, targetEntity=Location.class)
+	@JoinColumn(name="location_id")
 	private Location location;
+	
+	@OneToMany(mappedBy = "garden")
 	private List<Patch> patches;
 	private String workingDays;
 	private String workingTimeWindow;
@@ -79,5 +82,14 @@ public class Garden {
 		this.user = user;
 	}
 	
-	
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("id:" +this.getId() + ", ");
+		builder.append("userId:" +this.getUser().getId() + ", ");
+		builder.append("name:" +this.getName() + ", ");
+		builder.append("location:" +this.getLocation().toString() + ", ");
+		builder.append("workingDays:" +this.getWorkingDays() + ", ");
+		builder.append("timeWindow:" +this.getWorkingTimeWindow() + ", ");
+		return builder.toString();
+	}
 }

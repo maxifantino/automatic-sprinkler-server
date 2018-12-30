@@ -17,6 +17,15 @@ public class LoginRequest {
 		this.password = password;
 	}
 	
-	
+	@Override
+	public String toString() {
+		StringBuilder output = new StringBuilder();
+		output.append("userName:");
+		output.append(username);
+		output.append(",");
+		output.append("password:");
+		output.append(password);
+		return output.toString();
+	}
 
 }

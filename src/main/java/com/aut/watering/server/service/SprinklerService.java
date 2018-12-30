@@ -3,6 +3,7 @@ package com.aut.watering.server.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.aut.watering.server.data.DeleteSprinklerRequest;
 import com.aut.watering.server.data.SprinklerRequest;
@@ -11,6 +12,7 @@ import com.aut.watering.server.dto.Patch;
 import com.aut.watering.server.enums.AvailableSprinklerStatus;
 import com.google.gson.JsonObject;
 
+@Service
 public class SprinklerService {
 	
 	@Autowired
@@ -19,6 +21,8 @@ public class SprinklerService {
 	@Autowired
 	private GardenDao gardenDao;
 	
+	@Autowired
+	private SprinklerActivationService activationService;
 	
 	@Autowired
 	private DynamicPropertiesService propertyService;
@@ -119,5 +123,9 @@ public class SprinklerService {
 		response.addProperty("response_code", sprinklerStatus.getId());
 		response.addProperty("response_status", sprinklerStatus.toString());
 		return response.getAsString();
+	}
+	
+	public boolean shouldActivateSprinkler (Patch sprinkler, float currentHumidity, Integer nextCheck){
+		return activationService.checkActivation(sprinkler, currentHumidity, nextCheck);
 	}
 }

@@ -1,5 +1,8 @@
 package com.aut.watering.server.service;
 
+import org.springframework.stereotype.Service;
+
+@Service
 public class UserValidatorService {
 
 	public boolean validateEmail(String email){

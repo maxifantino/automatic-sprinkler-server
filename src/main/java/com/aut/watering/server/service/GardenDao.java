@@ -4,6 +4,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
 import com.aut.watering.server.dto.Garden;
@@ -11,7 +12,7 @@ import com.aut.watering.server.dto.Patch;
 
 @Service
 public class GardenDao {
-
+	Logger log = org.slf4j.LoggerFactory.getLogger(this.getClass());
 	private SessionFactory sessionFactory;
 
     public void setSessionFactory(SessionFactory sessionFactory) {
@@ -26,10 +27,12 @@ public class GardenDao {
 	}
 	
 	public void saveGarden (Garden garden){
+		log.error ("Llegueeeeee dao" + garden.toString());
 		Session session = this.sessionFactory.openSession();
 		Transaction tx = session.beginTransaction();
 		session.persist(garden);
 		tx.commit();
+		log.error("MaxiDao: " + garden.toString());
 		session.close();
 	}
 	

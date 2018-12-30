@@ -1,14 +1,34 @@
 package com.aut.watering.server.dto;
 
-public class Patch {
-	
+import java.io.Serializable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+@Entity
+@Table(name="patch")
+public class Patch implements Serializable{
+
+	private static final long serialVersionUID = -7094207383081555850L;
+	@Id
+	@Column(name="id")
 	private Integer id;
 	private String patchCode;
 	private float humidityThreshold;
 	private float criticalHumidity;
+	private float humidity;
 	private String type;
 	private long wateringTime;
 	private int status;
+		
+	@ManyToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="garden_id")
+	private Garden garden;
 	
 	public Integer getId() {
 		return id;
@@ -51,5 +71,11 @@ public class Patch {
 	}
 	public void setStatus(int status) {
 		this.status = status;
+	}
+	public float getHumidity() {
+		return humidity;
+	}
+	public void setHumidity(float humidity) {
+		this.humidity = humidity;
 	}
 }

@@ -21,17 +21,22 @@ import com.aut.watering.server.data.CreateGardenRequest;
 import com.aut.watering.server.data.ServerMessages;
 import com.aut.watering.server.data.SprinklerRequest;
 import com.aut.watering.server.dto.Garden;
+import com.aut.watering.server.dto.User;
 import com.aut.watering.server.service.GardenService;
+import com.aut.watering.server.service.UserService;
 
 @Controller
 public class GardenController {
 	
-	final static Logger log = LoggerFactory.getLogger(UserController.class);
+	final static Logger log = LoggerFactory.getLogger(GardenController.class);
 
+	@Autowired
+	private UserService userService;
+	
 	@Autowired
 	private GardenService gardenService;
 	
-	@RequestMapping(produces = "application/json", value = "/garden/{id}/", method=RequestMethod.DELETE)
+	@RequestMapping(produces = "application/json", value = "/garden/{id}", method=RequestMethod.DELETE)
 	@ResponseBody
 	public ResponseEntity<?> deleteGarden(@RequestBody SprinklerRequest request, @PathVariable Integer gardenId, @RequestParam Integer userId){
 		HttpResponseBuilder responseBuilder = new HttpResponseBuilder();
@@ -60,16 +65,17 @@ public class GardenController {
 		return ResponseEntity.status(status).body(responseBuilder.toString());	
 	} 
 	
-	@RequestMapping(produces = "application/json", value = "/garden/{id}/", method=RequestMethod.DELETE)
+	@RequestMapping(produces = "application/json", value = "/garden", method=RequestMethod.POST)
 	@ResponseBody
-	public ResponseEntity<?> addGarden(@RequestBody CreateGardenRequest request, @PathVariable Integer gardenId, @RequestParam Integer userId){
+	public ResponseEntity<?> addGarden(@RequestBody CreateGardenRequest request){
 		HttpResponseBuilder responseBuilder = new HttpResponseBuilder();
 		String token;
-		int status;
+		int status=200;
 		log.info ("Creating garden with the following request: " + request.toString());
+		User user = userService.getUser(request.getUserId());
 		if (gardenService.validateCreateRequest(request)){
-			boolean result = gardenService.createGarden(request);
-			if(!result){
+			Garden newGarden = gardenService.createGarden(request, user);
+			if(newGarden != null){
 				status = HttpStatus.SC_INTERNAL_SERVER_ERROR;
 				responseBuilder.withHttpCode(HttpStatus.SC_INTERNAL_SERVER_ERROR)
 						.withMessage(ServerMessages.INTERNAL_ERROR); 

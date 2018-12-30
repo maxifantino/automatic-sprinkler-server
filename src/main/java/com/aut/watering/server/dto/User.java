@@ -1,9 +1,14 @@
 package com.aut.watering.server.dto;
 
+import java.io.Serializable;
 import java.util.List;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
@@ -13,9 +18,11 @@ import com.aut.watering.server.enums.AvailableLanguages;
 
 @Entity
 @Table(name = "user")
-public class User {
+public class User implements Serializable{
 	
+	private static final long serialVersionUID = 4059945026832055572L;
 	@Id
+	@GeneratedValue
 	@Column(name = "id")
 	private Integer id;
 	private String username;
@@ -26,10 +33,9 @@ public class User {
 	private String surname;
 	private AvailableLanguages language;
 
-	@OneToMany(mappedBy = "garden")
+	@OneToMany( mappedBy="user")
 	private List<Garden> gardens;
-  
-	@Id
+ 
 	public Integer getId() {
 		return id;
 	}
@@ -78,6 +84,21 @@ public class User {
 	}
 	public void setGardens(List<Garden> gardens) {
 		this.gardens = gardens;
+	}
+	
+	@Override
+	public String toString() {
+		
+		StringBuilder builder = new StringBuilder();
+		builder.append("id:").append(id).append(",");
+		builder.append("username").append(username).append(",");
+		builder.append("password:").append(password).append(",");
+		builder.append("email:").append(email).append(",");
+		builder.append("name").append(name).append(",");
+		builder.append("surname:").append(surname).append(",");
+		builder.append("language:").append(language).append(",");
+
+		return builder.toString();
 	}
 	
 }

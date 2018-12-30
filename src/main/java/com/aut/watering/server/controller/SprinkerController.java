@@ -19,10 +19,12 @@ import com.aut.watering.server.builder.HttpResponseBuilder;
 import com.aut.watering.server.data.DeleteSprinklerRequest;
 import com.aut.watering.server.data.ServerMessages;
 import com.aut.watering.server.data.SprinklerRequest;
+import com.aut.watering.server.data.WaterRequest;
 import com.aut.watering.server.dto.Patch;
 import com.aut.watering.server.enums.AvailableSprinklerStatus;
 import com.aut.watering.server.service.DynamicPropertiesService;
 import com.aut.watering.server.service.SprinklerService;
+import com.google.gson.JsonObject;
 
 @Controller
 public class SprinkerController {
@@ -153,5 +155,37 @@ public class SprinkerController {
 		}
 		log.error(MessageFormat.format("Status Result: patchCode: {1}- response: {2}", patchCode, responseBuilder.toString()));
 		return ResponseEntity.status(status).body(responseBuilder.toString());
+	}
+	
+	@RequestMapping( consumes = "application/json", produces = "application/json", value = "/garden/{id}/patch/checkActivation", method=RequestMethod.PUT)
+	@ResponseBody
+	public ResponseEntity<?> shouldActivateSprinkler(@RequestBody WaterRequest request,  @PathVariable Integer gardenId){
+		HttpResponseBuilder responseBuilder = new HttpResponseBuilder();
+		String token;
+		int status;
+		boolean activationResult = false;
+		log.info ("Check sprinklier activation with following request: " + request.toString());
+		Patch sprinkler = sprinklerService.getSprinkler(request.getPatchCode());
+		if (sprinkler != null){
+			
+			activationResult = sprinklerService.shouldActivateSprinkler(sprinkler, request.getCurrentHumidity(), request.getNextSchedulledCheck());
+			responseBuilder
+			.withHttpCode(HttpStatus.SC_OK)
+			.withMessage(getStatusMesage(activationResult) );			
+			status = HttpStatus.SC_OK;
+		}
+		else{
+			responseBuilder
+			.withHttpCode(HttpStatus.SC_NOT_FOUND)
+			.withMessage( ServerMessages.SPRINKLER_NOT_FOUND);			
+			status = HttpStatus.SC_NOT_FOUND;
+		}
+		log.error(MessageFormat.format("Activation Result: patchCode: {1}- response: {2}", activationResult, responseBuilder.toString()));
+		return ResponseEntity.status(status).body(responseBuilder.toString());
+	}
+	private String getStatusMesage(boolean status){
+		JsonObject response = new JsonObject();
+		response.addProperty("activate_sprinkler", status);
+		return response.toString();
 	}
 }

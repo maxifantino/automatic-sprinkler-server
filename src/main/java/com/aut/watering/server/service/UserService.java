@@ -19,28 +19,31 @@ public class UserService {
 	
 	@Autowired
 	private TokenGeneratorService tokenService;
-	
+
+	@Autowired
 	private UserValidatorService validatorService;
 	
 	private Logger log = LoggerFactory.getLogger(UserService.class);
 	
-	public boolean validateLogin(LoginRequest request){
+	public boolean validateLogin(LoginRequest request){ // la papota esta aca.
+		log.error("validate: " + request.toString());
 		return (StringUtils.isNotBlank(request.getUsername()) 
-				&& StringUtils.isNotBlank(request.getUsername())) ? true : false;	
+				&& StringUtils.isNotBlank(request.getPassword())) ? true : false;	
 	}
 
 	public String validateUserRequest(CreateUserRequest request){
 		String message = null;
+		log.info("getUsername: " + request.getUsername());
 		if (!validatorService.validateEmail(request.getEmail())){
 			message = ServerMessages.EMAIL_NOT_VALID;
 		}
-		else if (validatorService.validateName(request.getName())){
+		else if (!validatorService.validateName(request.getName())){
 			message = ServerMessages.NAME_NOT_VALID;
 		}
-		else if (validatorService.validatePassword(request.getPassword())){
+		else if (!validatorService.validatePassword(request.getPassword())){
 			message = ServerMessages.PASSWORD_NOT_VALID;
 		}
-		else if (validatorService.validateUserName(request.getUsername())){
+		else if (!validatorService.validateUserName(request.getUsername())){
 			message = ServerMessages.USERNAME_PWD_BLANK;
 		}
 		return message;
@@ -48,10 +51,12 @@ public class UserService {
 	
 	public String login (LoginRequest request){
 		boolean result = false;
+		log.error("doing login....." + request.toString());
 		User populatedUser = userDao.getUser(request.getUsername());
+		log.error("Populated user: " + populatedUser.toString());
 		result = (populatedUser != null) ? 
 				request.getPassword().equals(populatedUser.getPassword()) : false;		
-		
+		log.error("Result: " + result);
 		return result ? tokenService.getToken() : StringUtils.EMPTY;
 	}
 	
@@ -60,16 +65,33 @@ public class UserService {
 		return user;
 	}
 	
+	public User getUser (Integer userId){
+		User user = userDao.getUser(userId);
+		return user;
+	}
+	
 	public User createUser (CreateUserRequest createRequest){
 		// primero chequeo que el usuario no exista anteriormente
+		log.error("CreateRequest: " + createRequest.toString());
 		User user = new User();
 		user.setEmail(createRequest.getEmail());
 		user.setName(createRequest.getName());
 		user.setPassword(createRequest.getPassword());
 		user.setSurname(createRequest.getSurname());
 		user.setUsername(createRequest.getUsername());
+		log.error("Por salvar.... " + userDao);
 		userDao.saveUser(user);
 		return user;
 	}
-	
+
+	public User findOrCreate(CreateUserRequest createRequest) {
+		User user = null;
+		try{
+			user = getUser(createRequest.getUsername());
+		}
+		catch (Exception e){
+			user = createUser(createRequest);
+		}
+		return user;
+	}
 }
