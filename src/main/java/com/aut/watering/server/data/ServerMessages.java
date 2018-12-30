@@ -15,4 +15,7 @@ public class ServerMessages {
 	public static final String INTERNAL_ERROR = "Error interno, por favor reintente mas tarde";
 	public static final String GARDEN_CREATED = "El jardin fue creado exitosamente";
 	public static final String SPRINKLER_NOT_FOUND  = "Regador no encontrado";
+	public static final String SPRINKLER_BAD_REQUEST = "Los umbrales de humedad deben pertenecer al rango 0-100% y el tiempo máximo de riego menor a {1}";
+	public static final String SPRINKLER_CREATED = "Regador creado";
+	public static final String SPRINKLER_DELETED = "Regador eliminado";
 }

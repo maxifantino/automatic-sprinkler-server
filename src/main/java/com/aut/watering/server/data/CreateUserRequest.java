@@ -1,5 +1,7 @@
 package com.aut.watering.server.data;
 
+import org.json.JSONObject;
+
 public class CreateUserRequest {
 	
 	private String username;
@@ -37,6 +39,16 @@ public class CreateUserRequest {
 	}
 	public void setSurname(String surname) {
 		this.surname = surname;
+	}
+
+	public String toString() {
+		JSONObject response = new JSONObject();
+		response.put("username", username);
+		response.put("password", password);
+		response.put("email", email);
+		response.put("name", name);
+		response.put("surname", surname);
+		return response.toString();
 	}
 	
 }

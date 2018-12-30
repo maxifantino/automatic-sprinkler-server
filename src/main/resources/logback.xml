@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <appender name="logAppender" class="ch.qos.logback.core.FileAppender">
-        <file>/app/log/app.log</file>
+        <file>log/app.log</file>
         <append>true</append>
         <encoder>
             <pattern>%date{ISO8601} [%thread] %level %L [%X{txID}] %logger{35} - %msg%n</pattern>

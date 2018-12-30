@@ -2,21 +2,22 @@ package com.aut.watering.server.data;
 
 public class CreateGardenRequest {
 	
-	private String userId;
 	private String gardenName;
 	private String city;
-	private String state;
+	private String address;
 	private String country;
 	private String latitude;
 	private String longitude;
 	private String wateringTimeWindow;
 	private String wateringWorkingDays;
 	private String patchList;
+	private Integer userId;
 	
-	public String getUserId() {
+	
+	public Integer getUserId() {
 		return userId;
 	}
-	public void setUserId(String userId) {
+	public void setUserId(Integer userId) {
 		this.userId = userId;
 	}
 	public String getGardenName() {
@@ -31,11 +32,11 @@ public class CreateGardenRequest {
 	public void setCity(String city) {
 		this.city = city;
 	}
-	public String getState() {
-		return state;
+	public String getAddress() {
+		return address;
 	}
-	public void setState(String state) {
-		this.state = state;
+	public void setAddress(String address) {
+		this.address = address;
 	}
 	public String getCountry() {
 		return country;
@@ -74,5 +75,21 @@ public class CreateGardenRequest {
 	public void setPatchList(String patchList) {
 		this.patchList = patchList;
 	}
-	
+
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("gardenName: " + this.gardenName + ",");
+		builder.append("city: " + this.city + ",");
+		builder.append("address: " + this.address + ",");
+		builder.append("country: " + this.country + ",");
+		builder.append("latitude: " + this.latitude + ",");
+		
+		builder.append("longitude: " + this.longitude + ",");
+		builder.append("wateringTimeWindow: " + this.wateringTimeWindow + ",");
+		builder.append("wateringWorkingDays: " + this.wateringWorkingDays + ",");
+		builder.append("patchList: " + this.patchList + ",");
+		builder.append("userId: " + this.userId);
+
+		return builder.toString();
+	}
 }
