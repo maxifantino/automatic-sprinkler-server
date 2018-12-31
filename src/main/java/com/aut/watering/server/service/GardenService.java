@@ -73,11 +73,13 @@ public class GardenService {
 	}
 	
 	private boolean validateWeekDays(String weekDays){
-		return StringUtils.isBlank(weekDays) || weekDays.matches("(([0-7](,)?){1,7})*");
+		log.error(weekDays);
+		return StringUtils.isBlank(weekDays) || weekDays.matches("\\[(([0-7](,)?){1,7})\\]");
 	}
 	
 	private boolean validateTimeWindow (String timewindow){
-		return StringUtils.isBlank(timewindow) || timewindow.matches("from:[0-9]*,\\s*to:[0-9]*");
+		log.error(timewindow);
+		return StringUtils.isBlank(timewindow) || timewindow.matches("\\{\"from\":.*[0-9]*,.*\"to\":.*[0-9]*\\}");
 	}
 	
 	public void deleteGarden(Garden garden){
