@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.aut.watering.server.builder.HttpResponseBuilder;
 import com.aut.watering.server.data.CreateGardenRequest;
+import com.aut.watering.server.data.ModifyGardenRequest;
 import com.aut.watering.server.data.ServerMessages;
 import com.aut.watering.server.data.SprinklerRequest;
 import com.aut.watering.server.dto.Garden;
@@ -36,26 +37,28 @@ public class GardenController {
 	@Autowired
 	private GardenService gardenService;
 	
-	@RequestMapping(produces = "application/json", value = "/garden/{id}", method=RequestMethod.DELETE)
+	@RequestMapping(produces = "application/json", value = "/garden/{gardenId}", method=RequestMethod.DELETE)
 	@ResponseBody
-	public ResponseEntity<?> deleteGarden(@RequestBody SprinklerRequest request, @PathVariable Integer gardenId, @RequestParam Integer userId){
+	public ResponseEntity<?> deleteGarden(@PathVariable Integer gardenId, @RequestParam Integer userId){
 		HttpResponseBuilder responseBuilder = new HttpResponseBuilder();
 		String token;
 		int status;
-		log.info (MessageFormat.format("Garden delete request received: {userId:\"{1}\",gardenId:\"{2}\" ", userId, gardenId));
+		log.info (MessageFormat.format("Garden delete request received: userId:{1},gardenId:{2}", Integer.toString(userId), Integer.toString(gardenId)));
 		Garden garden = gardenService.getGarden(gardenId); 
-		
+		log.error("GARDENDELETE");
 		if (garden == null){
 			status = HttpStatus.SC_NOT_FOUND;
 			responseBuilder.withHttpCode(HttpStatus.SC_NOT_FOUND)
 					.withMessage(ServerMessages.GARDEN_NOT_FOUND); 
 		}
-		else if (garden != null && !gardenService.validateGardenDelete(garden, userId)){
-			status = HttpStatus.SC_OK;
+		else if (!gardenService.validateGardenDelete(garden, userId)){
+			status = HttpStatus.SC_FORBIDDEN;
 			responseBuilder.withHttpCode(HttpStatus.SC_FORBIDDEN)
 					.withMessage(""); 
 		}
 		else{
+			log.error("Por llamar al metodo deleteGarden");
+			gardenService.deleteGarden(garden);
 			status = HttpStatus.SC_OK;
 			responseBuilder.withHttpCode(HttpStatus.SC_OK)
 					.withMessage(ServerMessages.GARDEN_ERASED); 
@@ -75,7 +78,7 @@ public class GardenController {
 		User user = userService.getUser(request.getUserId());
 		if (gardenService.validateCreateRequest(request)){
 			Garden newGarden = gardenService.createGarden(request, user);
-			if(newGarden != null){
+			if(newGarden == null){
 				status = HttpStatus.SC_INTERNAL_SERVER_ERROR;
 				responseBuilder.withHttpCode(HttpStatus.SC_INTERNAL_SERVER_ERROR)
 						.withMessage(ServerMessages.INTERNAL_ERROR); 
@@ -90,5 +93,42 @@ public class GardenController {
 		log.error(MessageFormat.format("Result:{1}", responseBuilder.toString()));
 		return ResponseEntity.status(status).body(responseBuilder.toString());
 	}
-	
+
+	@RequestMapping(produces = "application/json", value = "/garden/{gardenId}", method=RequestMethod.PUT)
+	@ResponseBody
+	public ResponseEntity<?> modifyGarden(@PathVariable Integer gardenId, @RequestBody ModifyGardenRequest request, @RequestParam Integer userId){
+		HttpResponseBuilder responseBuilder = new HttpResponseBuilder();
+		String token;
+		int status=200;
+		log.info ("Creating garden with the following request: " + request.toString());
+		Garden garden = gardenService.getGarden(gardenId);
+		if (garden != null){
+			String validationMessage = gardenService.validateModifyRequest(request);
+			if(garden.getUser().getId() != userId){
+				status = HttpStatus.SC_UNAUTHORIZED;
+				responseBuilder.withHttpCode(HttpStatus.SC_UNAUTHORIZED)
+						.withMessage(ServerMessages.UNAUTHORIZED_GARDEN_MODIFICATION); 
+				
+			}
+			else if(StringUtils.isNotBlank(validationMessage)){
+				status = HttpStatus.SC_BAD_REQUEST;
+				responseBuilder.withHttpCode(HttpStatus.SC_BAD_REQUEST)
+						.withMessage(validationMessage); 
+				
+			}
+			else{
+				status = HttpStatus.SC_OK;
+				responseBuilder.withHttpCode(HttpStatus.SC_OK)
+						.withMessage(ServerMessages.GARDEN_MODIFIED); 
+			}
+		}
+		else {
+			status = HttpStatus.SC_NOT_FOUND;
+			responseBuilder.withHttpCode(HttpStatus.SC_NOT_FOUND)
+					.withMessage(ServerMessages.GARDEN_NOT_FOUND); 
+		}
+		log.error(MessageFormat.format("Result:{1}", responseBuilder.toString()));
+		return ResponseEntity.status(status).body(responseBuilder.toString());
+	}
+
 }

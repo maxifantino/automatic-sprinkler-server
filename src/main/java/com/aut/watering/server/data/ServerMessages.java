@@ -18,4 +18,10 @@ public class ServerMessages {
 	public static final String SPRINKLER_BAD_REQUEST = "Los umbrales de humedad deben pertenecer al rango 0-100% y el tiempo máximo de riego menor a {1}";
 	public static final String SPRINKLER_CREATED = "Regador creado";
 	public static final String SPRINKLER_DELETED = "Regador eliminado";
+	public static final String GARDEN_MODIFIED = "Jardin modificado existosamente";
+	public static final String INVALID_WORKING_HOURS = "El formato para informar el rango de horas de trabajo debe ser un JSON con siguiente sintaxis  {from:0, to:23}";
+	public static final String INVALID_WORKING_DAYS = "El formato para informar los dias a trabajar debe ser una lista de numeros de dias. Ejemplo: [1,4,5,7] 1 = Domingo";
+	public static final String UNAUTHORIZED_GARDEN_MODIFICATION = "EL jardin a modificar no pertenece al usuario actual";
 }
+
+

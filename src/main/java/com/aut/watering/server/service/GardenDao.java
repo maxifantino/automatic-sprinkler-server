@@ -1,25 +1,28 @@
 package com.aut.watering.server.service;
 
+import javax.persistence.EntityManagerFactory;
+
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.aut.watering.server.dto.Garden;
+import com.aut.watering.server.dto.Location;
 import com.aut.watering.server.dto.Patch;
 
 @Service
 public class GardenDao {
 	Logger log = org.slf4j.LoggerFactory.getLogger(this.getClass());
-	private SessionFactory sessionFactory;
+	
+	@Autowired
+	private EntityManagerFactory entityManagerFactory;
 
-    public void setSessionFactory(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
-	public Garden getGarden (Integer id){
-		Session session = this.sessionFactory.openSession();
+    public Garden getGarden (Integer id){
+		Session session = entityManagerFactory.unwrap(SessionFactory.class).openSession();
 		Query query = session.createQuery("from Garden where id= :id");
 		query.setParameter("id", id);
 		Garden garden = (Garden)query.uniqueResult();
@@ -28,7 +31,7 @@ public class GardenDao {
 	
 	public void saveGarden (Garden garden){
 		log.error ("Llegueeeeee dao" + garden.toString());
-		Session session = this.sessionFactory.openSession();
+		Session session = entityManagerFactory.unwrap(SessionFactory.class).openSession();
 		Transaction tx = session.beginTransaction();
 		session.persist(garden);
 		tx.commit();
@@ -37,7 +40,7 @@ public class GardenDao {
 	}
 	
 	public Patch getSprinkler(Integer id){
-		Session session = this.sessionFactory.openSession();
+		Session session = entityManagerFactory.unwrap(SessionFactory.class).openSession();
 		Query query = session.createQuery("from Patch where id= :id");
 		query.setParameter("id", id);
 		Patch patch = (Patch)query.uniqueResult();
@@ -45,7 +48,7 @@ public class GardenDao {
 	}
 
 	public Patch getSprinkler(String patchCode){
-		Session session = this.sessionFactory.openSession();
+		Session session = entityManagerFactory.unwrap(SessionFactory.class).openSession();
 		Query query = session.createQuery("from Patch where patchCode= :patch_code");
 		query.setParameter("patch_code", patchCode);
 		Patch patch = (Patch)query.uniqueResult();
@@ -53,7 +56,7 @@ public class GardenDao {
 	}
 
 	public void savePatch (Patch patch){
-		Session session = this.sessionFactory.openSession();
+		Session session = entityManagerFactory.unwrap(SessionFactory.class).openSession();
 		Transaction tx = session.beginTransaction();
 		session.persist(patch);
 		tx.commit();
@@ -61,11 +64,34 @@ public class GardenDao {
 	}
 
 	public void deleteGarden (Garden garden){
-		Session session = this.sessionFactory.openSession();
-		Transaction tx = session.beginTransaction();
-		session.delete(garden);
+		log.error("Llegue!!!");
+		Session session = entityManagerFactory.unwrap(SessionFactory.class).openSession();
+		Transaction tx = session.beginTransaction();		
+		session.remove(session.contains(garden) ? garden : session.merge(garden));
+		
+		tx.commit();
+		log.error("comitee!!!");
+		
+		session.close();
+	}
+	
+	public void mergeGarden(Garden garden) {
+		Session session = entityManagerFactory.unwrap(SessionFactory.class).openSession();
+		Transaction tx = session.beginTransaction();		
+		session.merge(garden);
+		
 		tx.commit();
 		session.close();
+	}
+	
+	public void mergeLocation (Location location) {
+		Session session = entityManagerFactory.unwrap(SessionFactory.class).openSession();
+		Transaction tx = session.beginTransaction();		
+		session.merge(location);
+		
+		tx.commit();
+		session.close();
+		
 	}
 }
 

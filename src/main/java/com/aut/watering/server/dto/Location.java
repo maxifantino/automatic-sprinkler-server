@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -13,6 +14,7 @@ public class Location implements Serializable{
 	
 	private static final long serialVersionUID = 1926261411609868355L;
 	@Id
+	@GeneratedValue
 	@Column(name="id")
 	private Integer id;
 	private String country;

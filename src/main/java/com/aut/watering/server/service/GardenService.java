@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import com.aut.watering.server.builder.LocationBuilder;
 import com.aut.watering.server.constants.SprinklerConstants;
 import com.aut.watering.server.data.CreateGardenRequest;
+import com.aut.watering.server.data.ModifyGardenRequest;
+import com.aut.watering.server.data.ServerMessages;
 import com.aut.watering.server.dto.Garden;
 import com.aut.watering.server.dto.Location;
 import com.aut.watering.server.dto.Patch;
@@ -40,6 +42,17 @@ public class GardenService {
 		return result;
 	}
 
+	public String validateModifyRequest (ModifyGardenRequest request) {
+		String validationMessage = StringUtils.EMPTY;
+		if (StringUtils.isNotBlank(request.getWateringTimeWindow()) && !validateTimeWindow(request.getWateringTimeWindow())){
+			validationMessage = ServerMessages.INVALID_WORKING_HOURS;
+		}
+		if (StringUtils.isNotBlank(request.getWateringWorkingDays()) && !validateWeekDays(request.getWateringWorkingDays())) {
+			validationMessage = ServerMessages.INVALID_WORKING_DAYS;
+		}
+		return validationMessage;
+	}
+	
 	public boolean validateCreateRequest (CreateGardenRequest request){
 		boolean valid = true;
 		if (StringUtils.isBlank(request.getGardenName())||
@@ -73,11 +86,13 @@ public class GardenService {
 	}
 	
 	private boolean validateWeekDays(String weekDays){
-		return StringUtils.isBlank(weekDays) || weekDays.matches("(([0-7](,)?){1,7})*");
+		log.error(weekDays);
+		return StringUtils.isBlank(weekDays) || weekDays.matches("\\[(([0-7](,)?){1,7})\\]");
 	}
 	
 	private boolean validateTimeWindow (String timewindow){
-		return StringUtils.isBlank(timewindow) || timewindow.matches("from:[0-9]*,\\s*to:[0-9]*");
+		log.error(timewindow);
+		return StringUtils.isBlank(timewindow) || timewindow.matches("\\{\"from\":.*[0-9]*,.*\"to\":.*[0-9]*\\}");
 	}
 	
 	public void deleteGarden(Garden garden){
@@ -111,5 +126,59 @@ public class GardenService {
 		// TODO: manejar errores.
 		return garden;
 	}
+	
+	public Garden modifyGarden (ModifyGardenRequest request, Garden garden) {
 
+		if (StringUtils.isNotBlank(request.getGardenName())) {
+			garden.setName(request.getGardenName());
+		}
+		
+		if (StringUtils.isNotBlank(request.getWateringTimeWindow())) {
+			garden.setWorkingTimeWindow(request.getWateringTimeWindow());
+		}		
+		
+		if (StringUtils.isNotBlank(request.getWateringWorkingDays())) {
+			garden.setWorkingDays(request.getWateringWorkingDays());
+		}
+		
+		checkGardenLocationUpdate(garden, request);
+		gardenDao.mergeGarden(garden);
+		return garden;
+	}
+	
+	private void checkGardenLocationUpdate(Garden garden, ModifyGardenRequest request) {
+		
+		Location location = garden.getLocation();
+		boolean shouldModify = false;
+		
+		if (StringUtils.isNotBlank(request.getAddress())) {
+			location.setAddress(request.getAddress());
+			shouldModify = true;
+		}
+		
+		if (StringUtils.isNotBlank(request.getCountry())) {
+			location.setCountry(request.getCountry());
+			shouldModify = true;
+		}
+		
+		if (StringUtils.isNotBlank(request.getCity())) {
+			location.setCity(request.getCity());
+			shouldModify = true;
+		}
+		
+		if (StringUtils.isNotBlank(request.getLatitude())) {
+			location.setLatitude(Double.parseDouble(request.getLatitude()));
+			shouldModify = true;
+		}
+		
+		if (StringUtils.isNotBlank(request.getLongitude())) {
+			location.setLatitude(Double.parseDouble(request.getLongitude()));
+			shouldModify = true;
+		}
+		
+		if (shouldModify) {
+			gardenDao.mergeLocation(location);
+		}
+	}
+	
 }
