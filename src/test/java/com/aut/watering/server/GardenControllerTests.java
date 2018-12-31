@@ -285,6 +285,33 @@ public class GardenControllerTests {
 		assertNull(gardenService.getGarden(garden.getId()));			
 	}
 
+	// modification tests
+	
+	public void cantModifyNotFoundGarden(){
+		// creo mock User
+		User user = createMockUser();
+		Integer gardenId;
+		Integer userID = user.getId();
+		String jsonRequest = "{\"userId\":" + Integer.toString(userID)  
+		+",\"gardenName\":\"testgarden\"," +				
+			"\"address\": \" san martin 342  \" ,"+
+			"\"city\": \" CABA \" ,"+
+			"\"country\": \"Argentina \","+
+			"\"latitude\": \"-34.7372732\","+
+			"\"longitude\": \"-58.400216715\","+ 
+			"\"wateringWorkingDays\": \"[1,2,3,4,5,6]\"}";		
+		String uri = "/garden/gardenId?userId=userID";
+		HttpEntity<String> entity = buildRequestEntity(jsonRequest);
+		HttpStatus resultStatus = HttpStatus.CONFLICT;
+		try {
+			ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort(uri), entity, String.class);
+			resultStatus = response.getStatusCode();
+		} catch (Exception e) {
+			log.error("No deberia pasar");
+			log.error("Exception e", e);
+		}
+		assertTrue(resultStatus.is5xxServerError());			
+	}
 	
 	private User createMockUser() {
 		CreateUserRequestBuilder builder = new CreateUserRequestBuilder()

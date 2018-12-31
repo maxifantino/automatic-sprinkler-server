@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.aut.watering.server.builder.HttpResponseBuilder;
 import com.aut.watering.server.data.CreateGardenRequest;
+import com.aut.watering.server.data.ModifyGardenRequest;
 import com.aut.watering.server.data.ServerMessages;
 import com.aut.watering.server.data.SprinklerRequest;
 import com.aut.watering.server.dto.Garden;
@@ -92,5 +93,42 @@ public class GardenController {
 		log.error(MessageFormat.format("Result:{1}", responseBuilder.toString()));
 		return ResponseEntity.status(status).body(responseBuilder.toString());
 	}
-	
+
+	@RequestMapping(produces = "application/json", value = "/garden/{gardenId}", method=RequestMethod.PUT)
+	@ResponseBody
+	public ResponseEntity<?> modifyGarden(@PathVariable Integer gardenId, @RequestBody ModifyGardenRequest request, @RequestParam Integer userId){
+		HttpResponseBuilder responseBuilder = new HttpResponseBuilder();
+		String token;
+		int status=200;
+		log.info ("Creating garden with the following request: " + request.toString());
+		Garden garden = gardenService.getGarden(gardenId);
+		if (garden != null){
+			String validationMessage = gardenService.validateModifyRequest(request);
+			if(garden.getUser().getId() != userId){
+				status = HttpStatus.SC_UNAUTHORIZED;
+				responseBuilder.withHttpCode(HttpStatus.SC_UNAUTHORIZED)
+						.withMessage(ServerMessages.UNAUTHORIZED_GARDEN_MODIFICATION); 
+				
+			}
+			else if(StringUtils.isNotBlank(validationMessage)){
+				status = HttpStatus.SC_BAD_REQUEST;
+				responseBuilder.withHttpCode(HttpStatus.SC_BAD_REQUEST)
+						.withMessage(validationMessage); 
+				
+			}
+			else{
+				status = HttpStatus.SC_OK;
+				responseBuilder.withHttpCode(HttpStatus.SC_OK)
+						.withMessage(ServerMessages.GARDEN_MODIFIED); 
+			}
+		}
+		else {
+			status = HttpStatus.SC_NOT_FOUND;
+			responseBuilder.withHttpCode(HttpStatus.SC_NOT_FOUND)
+					.withMessage(ServerMessages.GARDEN_NOT_FOUND); 
+		}
+		log.error(MessageFormat.format("Result:{1}", responseBuilder.toString()));
+		return ResponseEntity.status(status).body(responseBuilder.toString());
+	}
+
 }

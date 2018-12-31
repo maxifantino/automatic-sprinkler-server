@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.aut.watering.server.dto.Garden;
+import com.aut.watering.server.dto.Location;
 import com.aut.watering.server.dto.Patch;
 
 @Service
@@ -72,6 +73,25 @@ public class GardenDao {
 		log.error("comitee!!!");
 		
 		session.close();
+	}
+	
+	public void mergeGarden(Garden garden) {
+		Session session = entityManagerFactory.unwrap(SessionFactory.class).openSession();
+		Transaction tx = session.beginTransaction();		
+		session.merge(garden);
+		
+		tx.commit();
+		session.close();
+	}
+	
+	public void mergeLocation (Location location) {
+		Session session = entityManagerFactory.unwrap(SessionFactory.class).openSession();
+		Transaction tx = session.beginTransaction();		
+		session.merge(location);
+		
+		tx.commit();
+		session.close();
+		
 	}
 }
 
