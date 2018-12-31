@@ -36,26 +36,28 @@ public class GardenController {
 	@Autowired
 	private GardenService gardenService;
 	
-	@RequestMapping(produces = "application/json", value = "/garden/{id}", method=RequestMethod.DELETE)
+	@RequestMapping(produces = "application/json", value = "/garden/{gardenId}", method=RequestMethod.DELETE)
 	@ResponseBody
-	public ResponseEntity<?> deleteGarden(@RequestBody SprinklerRequest request, @PathVariable Integer gardenId, @RequestParam Integer userId){
+	public ResponseEntity<?> deleteGarden(@PathVariable Integer gardenId, @RequestParam Integer userId){
 		HttpResponseBuilder responseBuilder = new HttpResponseBuilder();
 		String token;
 		int status;
-		log.info (MessageFormat.format("Garden delete request received: {userId:\"{1}\",gardenId:\"{2}\" ", userId, gardenId));
+		log.info (MessageFormat.format("Garden delete request received: userId:{1},gardenId:{2}", Integer.toString(userId), Integer.toString(gardenId)));
 		Garden garden = gardenService.getGarden(gardenId); 
-		
+		log.error("GARDENDELETE");
 		if (garden == null){
 			status = HttpStatus.SC_NOT_FOUND;
 			responseBuilder.withHttpCode(HttpStatus.SC_NOT_FOUND)
 					.withMessage(ServerMessages.GARDEN_NOT_FOUND); 
 		}
-		else if (garden != null && !gardenService.validateGardenDelete(garden, userId)){
-			status = HttpStatus.SC_OK;
+		else if (!gardenService.validateGardenDelete(garden, userId)){
+			status = HttpStatus.SC_FORBIDDEN;
 			responseBuilder.withHttpCode(HttpStatus.SC_FORBIDDEN)
 					.withMessage(""); 
 		}
 		else{
+			log.error("Por llamar al metodo deleteGarden");
+			gardenService.deleteGarden(garden);
 			status = HttpStatus.SC_OK;
 			responseBuilder.withHttpCode(HttpStatus.SC_OK)
 					.withMessage(ServerMessages.GARDEN_ERASED); 
@@ -75,7 +77,7 @@ public class GardenController {
 		User user = userService.getUser(request.getUserId());
 		if (gardenService.validateCreateRequest(request)){
 			Garden newGarden = gardenService.createGarden(request, user);
-			if(newGarden != null){
+			if(newGarden == null){
 				status = HttpStatus.SC_INTERNAL_SERVER_ERROR;
 				responseBuilder.withHttpCode(HttpStatus.SC_INTERNAL_SERVER_ERROR)
 						.withMessage(ServerMessages.INTERNAL_ERROR); 

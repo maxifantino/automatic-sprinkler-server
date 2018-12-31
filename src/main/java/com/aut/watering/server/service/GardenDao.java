@@ -63,10 +63,14 @@ public class GardenDao {
 	}
 
 	public void deleteGarden (Garden garden){
+		log.error("Llegue!!!");
 		Session session = entityManagerFactory.unwrap(SessionFactory.class).openSession();
-		Transaction tx = session.beginTransaction();
-		session.delete(garden);
+		Transaction tx = session.beginTransaction();		
+		session.remove(session.contains(garden) ? garden : session.merge(garden));
+		
 		tx.commit();
+		log.error("comitee!!!");
+		
 		session.close();
 	}
 }

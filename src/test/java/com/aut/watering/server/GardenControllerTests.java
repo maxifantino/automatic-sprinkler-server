@@ -54,7 +54,7 @@ public class GardenControllerTests {
 	private UserService userService;
 
 	private TestRestTemplate restTemplate = new TestRestTemplate();
-				
+			
 	@Test
 	public void cantCreateGardenWithUnknownUserId() throws Exception {
 		
@@ -235,7 +235,7 @@ public class GardenControllerTests {
 
 		CreateGardenRequest request = getMockGardenRequest(userID);
 		Garden garden = gardenService.createGarden(request, user);		
-		String uri = "/garden/" + garden.getId() + 10 +"?userId:" + userID;
+		String uri = "/garden/" + garden.getId() + 10 +"?userId=" + userID;
 
 		URI deleteUrl = new URI(createURLWithPort(uri));
 		try {
@@ -255,7 +255,7 @@ public class GardenControllerTests {
 
 		CreateGardenRequest request = getMockGardenRequest(userID);
 		Garden garden = gardenService.createGarden(request, user);		
-		String uri = "/garden/" + garden.getId()  +"?userId:" + userID + 1;
+		String uri = "/garden/" + garden.getId()  +"?userId=" + userID + 1;
 		URI deleteUrl = new URI(createURLWithPort(uri));
 		try {
 			restTemplate.delete (deleteUrl);
@@ -267,15 +267,16 @@ public class GardenControllerTests {
 	}
 	
 	@Test
-	public void cantDeleteGarden() throws Exception {
+	public void canDeleteGarden() throws Exception {
 		// creo mock User
 		User user = createMockUser();
 		Integer userID = user.getId();
 		CreateGardenRequest request = getMockGardenRequest(userID);
 		Garden garden = gardenService.createGarden(request, user);		
-		String uri = "/garden/" + garden.getId() +"?userId:" + userID;
+		String uri = "/garden/" + garden.getId() +"?userId=" + userID;
 		URI deleteUrl = new URI(createURLWithPort(uri));
 		try {
+			log.error("Url: " + deleteUrl.toString());
 			restTemplate.delete (deleteUrl);
 		} catch (Exception e) {
 			log.error("No deberia pasar");
