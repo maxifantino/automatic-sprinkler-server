@@ -19,7 +19,7 @@ public class Constants {
 	
 	private static void buildConstantsMap(){
 		constantsMap = new HashMap<String, String>();
-		constantsMap.put("max.watering.time", "40");
+		constantsMap.put("max.watering.time", "40000");
 	}
 	
 	public Map<String, String> getConstants(){

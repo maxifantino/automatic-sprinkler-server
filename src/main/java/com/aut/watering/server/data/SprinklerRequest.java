@@ -7,13 +7,13 @@ public class SprinklerRequest {
 	private Float humidityCritical;
 	private Long wateringSeconds;
 	private String type;
-	private Integer status;
+	private String status;
 	private Float humidity;
 	
-	public Integer getStatus() {
+	public String getStatus() {
 		return status;
 	}
-	public void setStatus(Integer status) {
+	public void setStatus(String status) {
 		this.status = status;
 	}
 	public String getPatchCode() {
@@ -51,5 +51,17 @@ public class SprinklerRequest {
 	}
 	public void setHumidity(Float humidity) {
 		this.humidity = humidity;
+	}
+
+	public String toString() {
+	
+		return "patchCode: " + patchCode +
+		",humidityThreshold: " + humidityThreshold+
+		",humidityCritical: " + humidityCritical+
+		",wateringSeconds: " + wateringSeconds+
+		",type: " +type+
+		",status: " + status+
+		",humidity: "+humidity;
+		
 	}
 }

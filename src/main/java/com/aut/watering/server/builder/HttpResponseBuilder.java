@@ -8,7 +8,7 @@ public class HttpResponseBuilder{
 	
 	private String message;
 	private int httpCode;
-	
+
 	public HttpResponseBuilder withMessage(String message){
 		this.message = message;
 		return this;

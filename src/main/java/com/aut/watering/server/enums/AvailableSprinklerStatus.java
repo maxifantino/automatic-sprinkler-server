@@ -16,6 +16,10 @@ public enum AvailableSprinklerStatus {
 		return id == 0 ? INACTIVE : ACTIVE;
 	}
 	
+	public static AvailableSprinklerStatus getFromDescription(String desc){
+		return "active".equals(desc ) ? ACTIVE : INACTIVE;
+	}
+	
 	public int getId(){
 		return this.statusCode;
 	}

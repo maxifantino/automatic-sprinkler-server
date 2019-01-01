@@ -52,7 +52,7 @@ public class UserController {
 			responseBuilder.withHttpCode(HttpStatus.SC_BAD_REQUEST)
 			.withMessage(ServerMessages.USERNAME_PWD_BLANK);	
 		}
-		log.info ("Output: " + responseBuilder.toString());
+		log.info("Result:" + responseBuilder.toString());
 			
 		return ResponseEntity.status(status).body(responseBuilder.toString());
 	}
@@ -91,7 +91,7 @@ public class UserController {
 
 		responseBuilder.withHttpCode(httpCode)
 		.withMessage(httpMessage);	
-		log.error("Output: " + responseBuilder.toString());
+		log.info("Result:" + responseBuilder.toString());
 		return ResponseEntity.status(httpCode).body(responseBuilder.toString());
 	}
 

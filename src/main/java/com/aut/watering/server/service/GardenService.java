@@ -142,6 +142,7 @@ public class GardenService {
 		}
 		
 		checkGardenLocationUpdate(garden, request);
+		log.error("Merged garden: " + garden.toString());
 		gardenDao.mergeGarden(garden);
 		return garden;
 	}

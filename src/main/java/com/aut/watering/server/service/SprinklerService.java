@@ -2,6 +2,8 @@ package com.aut.watering.server.service;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +29,8 @@ public class SprinklerService {
 	@Autowired
 	private DynamicPropertiesService propertyService;
 		
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
+	
 	public Patch getSprinkler(String sprinklerCode){
 		return dao.getSprinkler(sprinklerCode);
 	}
@@ -40,17 +44,17 @@ public class SprinklerService {
 	}
 	
 	public boolean validateHumidityCritical(SprinklerRequest request){
-		return request.getHumidityCritical()> 100 && request.getHumidityCritical() < 0;
+		return  request.getHumidityCritical() == null || (request.getHumidityCritical()< 100 && request.getHumidityCritical() > 0);
 	}
 	
 	public boolean validateHumidityThreshold(SprinklerRequest request){
-		return request.getHumidityThreshold()> 100 && request.getHumidityThreshold() < 0;
+		return request.getHumidityThreshold()< 100 && request.getHumidityThreshold() > 0;
 	}
 	
 	public boolean validateWateringTime(SprinklerRequest request){
 		int maxWateringTime = propertyService.getPropertyAsInteger("max.watering.time");
-		return request.getWateringSeconds() < 0 && 
-				request.getWateringSeconds() > maxWateringTime;
+		return request.getWateringSeconds() > 0 && 
+				request.getWateringSeconds() < maxWateringTime;
 	}
 	
 	public void save(SprinklerRequest request){
@@ -80,9 +84,8 @@ public class SprinklerService {
 		return found;
 	}
 	
-	public void delete (DeleteSprinklerRequest request){
-		Patch patch = dao.getSprinkler(request.getPatchId());
-		dao.deleteSprinkler(patch);
+	public void delete (Patch sprinkler){
+		dao.deleteSprinkler(sprinkler);
 	}
 	
 	public void modify (SprinklerRequest request, Patch patch){
@@ -107,14 +110,15 @@ public class SprinklerService {
 		if(request.getHumidityCritical()!= -1){
 			result = validateHumidityCritical(request);
 		}
-		
+		log.error ("Result: " + result);
 		if(request.getHumidityThreshold()!= -1){
 			result = validateHumidityThreshold(request);
 		}
-		
+		log.error ("Result: " + result);
 		if(request.getWateringSeconds()!= -1){
 			result = validateWateringTime(request);
 		}
+		log.error ("Result: " + result);
 		return result;
 	}
 	

@@ -14,6 +14,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.aut.watering.server.helper.GardenComparator;
+
 
 @Entity
 @Table(name = "garden")
@@ -93,5 +95,18 @@ public class Garden implements Serializable{
 		builder.append("workingDays:" +this.getWorkingDays() + ", ");
 		builder.append("timeWindow:" +this.getWorkingTimeWindow() + ", ");
 		return builder.toString();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || this.getClass() != obj.getClass()) {
+			return false;
+		}
+		Garden garden = (Garden) obj;
+		
+		return GardenComparator.compare(garden, this);
 	}
 }
