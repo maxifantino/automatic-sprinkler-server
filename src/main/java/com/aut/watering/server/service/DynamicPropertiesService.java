@@ -26,4 +26,9 @@ public class DynamicPropertiesService {
 		return Integer.valueOf(constantProvider.get(key));
 	}
 	
+	public String getPropertyAsString(String key){
+		// TODO: Exception management missing
+	return String.valueOf(constantProvider.get(key));
+	}
+
 }

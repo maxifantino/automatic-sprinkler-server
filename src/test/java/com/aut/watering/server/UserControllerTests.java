@@ -31,15 +31,12 @@ import com.aut.watering.server.service.UserService;
 
 // @ContextConfiguration(classes = {ApplicationConfiguration.class})
 @AutoConfigureTestDatabase 
-public class UserControllerTests {
+public class UserControllerTests extends WateringTests{
 
 	final static Logger log = LoggerFactory.getLogger(UserController.class);
 
 	@LocalServerPort
 	private int port;
-	
-	@Autowired
-	private UserService userService;
 	
 	private TestRestTemplate restTemplate = new TestRestTemplate();
 				
@@ -50,7 +47,7 @@ public class UserControllerTests {
 		HttpEntity<String> entity = buildRequestEntity(jsonRequest);
 		HttpStatus resultStatus = HttpStatus.INTERNAL_SERVER_ERROR;
 		try {
-			ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort(uri), entity, String.class);
+			ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort(uri,port), entity, String.class);
 			resultStatus = response.getStatusCode();
 		} catch (Exception e) {
 			log.error("No deberia pasar");
@@ -67,7 +64,7 @@ public class UserControllerTests {
 		HttpStatus resultStatus = HttpStatus.INTERNAL_SERVER_ERROR;
 
 		try {
-			ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort(uri), entity, String.class);
+			ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort(uri,port), entity, String.class);
 			resultStatus = response.getStatusCode();
 		} catch (Exception e) {
 			log.error("No deberia pasar");
@@ -97,7 +94,7 @@ public class UserControllerTests {
 
 		try {
 			log.error("About to login");
-			ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort(uri), entity, String.class);
+			ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort(uri,port), entity, String.class);
 			resultStatus = response.getStatusCode();
 			log.error("Status: " + resultStatus);
 		} catch (Exception e) {
@@ -114,7 +111,7 @@ public class UserControllerTests {
 		HttpEntity<String> entity = buildRequestEntity(jsonRequest);
 		HttpStatus resultStatus = HttpStatus.INTERNAL_SERVER_ERROR;
 		try {
-			ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort(uri), entity, String.class);
+			ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort(uri,port), entity, String.class);
 			resultStatus = response.getStatusCode();
 		} catch (Exception e) {
 			log.error("No deberia pasar");
@@ -129,7 +126,7 @@ public class UserControllerTests {
 		HttpEntity<String> entity = buildRequestEntity(jsonRequest);
 		HttpStatus resultStatus = HttpStatus.INTERNAL_SERVER_ERROR;
 		try {
-			ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort(uri), entity, String.class);
+			ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort(uri,port), entity, String.class);
 			resultStatus = response.getStatusCode();
 		} catch (Exception e) {
 			log.error("No deberia pasar");
@@ -145,7 +142,7 @@ public class UserControllerTests {
 		HttpEntity<String> entity = buildRequestEntity(jsonRequest);
 		HttpStatus resultStatus = HttpStatus.INTERNAL_SERVER_ERROR;
 		try {
-			ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort(uri), entity, String.class);
+			ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort(uri,port), entity, String.class);
 			resultStatus = response.getStatusCode();
 		} catch (Exception e) {
 			log.error("No deberia pasar");
@@ -173,7 +170,7 @@ public class UserControllerTests {
 		HttpEntity<String> entity = buildRequestEntity(jsonRequest);
 		HttpStatus resultStatus = HttpStatus.INTERNAL_SERVER_ERROR;
 		try {
-			ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort(uri), entity, String.class);
+			ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort(uri,port), entity, String.class);
 			resultStatus = response.getStatusCode();
 		} catch (Exception e) {
 			log.error("No deberia pasar");
@@ -189,7 +186,7 @@ public class UserControllerTests {
 		HttpEntity<String> entity = buildRequestEntity(jsonRequest);
 		HttpStatus resultStatus = HttpStatus.INTERNAL_SERVER_ERROR;
 		try {
-			ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort(uri), entity, String.class);
+			ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort(uri,port), entity, String.class);
 			resultStatus = response.getStatusCode();
 		} catch (Exception e) {
 			log.error("No deberia pasar");
@@ -199,14 +196,5 @@ public class UserControllerTests {
 	}
 
 	
-	private HttpEntity<String> buildRequestEntity(String json) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.add(HttpHeaders.CONTENT_TYPE, "application/json");
-		HttpEntity <String> entity= new HttpEntity<String>(json, headers);
-		return entity;
-	}
-	
-	private String createURLWithPort(String uri) {
-		return "http://localhost:" + port + uri;
-	}
+
 }

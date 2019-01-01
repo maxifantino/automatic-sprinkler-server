@@ -36,20 +36,15 @@ import com.aut.watering.server.service.UserService;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase 
-public class GardenControllerTests {
+public class GardenControllerTests extends WateringTests{
 
 	final static Logger log = LoggerFactory.getLogger(GardenController.class);
 
 	@LocalServerPort
 	private int port;
 	
-	@Autowired
-	private GardenService gardenService;
-	
-	@Autowired
-	private UserService userService;
-
 	private TestRestTemplate restTemplate = new TestRestTemplate();
+	
 
 	@Test
 	public void cantCreateGardenWithUnknownUserId() throws Exception {
@@ -72,7 +67,7 @@ public class GardenControllerTests {
 		HttpEntity<String> entity = buildRequestEntity(jsonRequest);
 		HttpStatus resultStatus = HttpStatus.CONFLICT;
 		try {
-			ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort(uri), entity, String.class);
+			ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort(uri, port), entity, String.class);
 			resultStatus = response.getStatusCode();
 		} catch (Exception e) {
 			log.error("No deberia pasar");
@@ -100,7 +95,7 @@ public class GardenControllerTests {
 		HttpEntity<String> entity = buildRequestEntity(jsonRequest);
 		HttpStatus resultStatus = HttpStatus.CONFLICT;
 		try {
-			ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort(uri), entity, String.class);
+			ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort(uri, port), entity, String.class);
 			resultStatus = response.getStatusCode();
 		} catch (Exception e) {
 			log.error("No deberia pasar");
@@ -128,7 +123,7 @@ public class GardenControllerTests {
 		HttpEntity<String> entity = buildRequestEntity(jsonRequest);
 		HttpStatus resultStatus = HttpStatus.CONFLICT;
 		try {
-			ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort(uri), entity, String.class);
+			ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort(uri, port), entity, String.class);
 			resultStatus = response.getStatusCode();
 		} catch (Exception e) {
 			log.error("No deberia pasar");
@@ -159,7 +154,7 @@ public class GardenControllerTests {
 		HttpStatus resultStatus = HttpStatus.CONFLICT;
 		log.error("Por llamar al controller!!!!");
 		try {
-			ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort(uri), entity, String.class);
+			ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort(uri, port), entity, String.class);
 			resultStatus = response.getStatusCode();
 		} catch (Exception e) {
 			log.error("No deberia pasar");
@@ -187,7 +182,7 @@ public class GardenControllerTests {
 		HttpEntity<String> entity = buildRequestEntity(jsonRequest);
 		HttpStatus resultStatus = HttpStatus.CONFLICT;
 		try {
-			ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort(uri), entity, String.class);
+			ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort(uri, port), entity, String.class);
 			resultStatus = response.getStatusCode();
 		} catch (Exception e) {
 			log.error("No deberia pasar");
@@ -214,7 +209,7 @@ public class GardenControllerTests {
 		HttpEntity<String> entity = buildRequestEntity(jsonRequest);
 		HttpStatus resultStatus = HttpStatus.CONFLICT;
 		try {
-			ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort(uri), entity, String.class);
+			ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort(uri, port), entity, String.class);
 			resultStatus = response.getStatusCode();
 		} catch (Exception e) {
 			log.error("No deberia pasar");
@@ -233,7 +228,7 @@ public class GardenControllerTests {
 		Garden garden = gardenService.createGarden(request, user);		
 		String uri = "/garden/" + garden.getId() + 10 +"?userId=" + userID;
 
-		URI deleteUrl = new URI(createURLWithPort(uri));
+		URI deleteUrl = new URI(createURLWithPort(uri, port));
 		try {
 			restTemplate.delete (deleteUrl);
 		} catch (Exception e) {
@@ -252,7 +247,7 @@ public class GardenControllerTests {
 		CreateGardenRequest request = getMockGardenRequest(userID);
 		Garden garden = gardenService.createGarden(request, user);		
 		String uri = "/garden/" + garden.getId()  +"?userId=" + userID + 1;
-		URI deleteUrl = new URI(createURLWithPort(uri));
+		URI deleteUrl = new URI(createURLWithPort(uri, port));
 		try {
 			restTemplate.delete (deleteUrl);
 		} catch (Exception e) {
@@ -270,7 +265,7 @@ public class GardenControllerTests {
 		CreateGardenRequest request = getMockGardenRequest(userID);
 		Garden garden = gardenService.createGarden(request, user);		
 		String uri = "/garden/" + garden.getId() +"?userId=" + userID;
-		URI deleteUrl = new URI(createURLWithPort(uri));
+		URI deleteUrl = new URI(createURLWithPort(uri, port));
 		try {
 			log.error("Url: " + deleteUrl.toString());
 			restTemplate.delete (deleteUrl);
@@ -297,7 +292,7 @@ public class GardenControllerTests {
 		String uri = "/garden/222222?userId=" +userID;
 		HttpEntity<String> entity = buildRequestEntity(jsonRequest);
 		try {
-			URI putUrl = new URI(createURLWithPort(uri));
+			URI putUrl = new URI(createURLWithPort(uri, port));
 			restTemplate.put(putUrl, entity);
 		} catch (Exception e) {
 			log.error("No deberia pasar");
@@ -320,7 +315,7 @@ public class GardenControllerTests {
 		String uri = "/garden/"+ garden.getId() + "?userId=" +garden.getUser().getId() + 1;
 		HttpEntity<String> entity = buildRequestEntity(jsonRequest);
 		try {
-			URI putUrl = new URI(createURLWithPort(uri));
+			URI putUrl = new URI(createURLWithPort(uri, port));
 			
 			 restTemplate.put(putUrl, entity);
 			
@@ -341,7 +336,7 @@ public class GardenControllerTests {
 		String uri = "/garden/"+ garden.getId() + "?userId=" +garden.getUser().getId();
 		HttpEntity<String> entity = buildRequestEntity(jsonRequest);
 		try {
-			URI putUrl = new URI(createURLWithPort(uri));	
+			URI putUrl = new URI(createURLWithPort(uri, port));	
 			 restTemplate.put(putUrl, entity);
 		} catch (Exception e) {
 			log.error("No deberia pasar");
@@ -361,7 +356,7 @@ public class GardenControllerTests {
 		String uri = "/garden/"+ garden.getId() + "?userId=" +garden.getUser().getId();
 		HttpEntity<String> entity = buildRequestEntity(jsonRequest);
 		try {			
-			URI putUrl = new URI(createURLWithPort(uri));	
+			URI putUrl = new URI(createURLWithPort(uri, port));	
 			restTemplate.put(putUrl, entity);
 		} catch (Exception e) {
 			log.error("No deberia pasar");
@@ -382,7 +377,7 @@ public class GardenControllerTests {
 		String uri = "/garden/"+ garden.getId() + "?userId=" +garden.getUser().getId();
 		HttpEntity<String> entity = buildRequestEntity(jsonRequest);
 		try {
-			URI putUrl = new URI(createURLWithPort(uri));	
+			URI putUrl = new URI(createURLWithPort(uri, port));	
 			restTemplate.put(putUrl, entity);
 		} catch (Exception e) {
 			log.error("No deberia pasar");
@@ -392,57 +387,6 @@ public class GardenControllerTests {
 		assertEquals("Brasil", updatedGarden.getLocation().getCountry());
 		assertEquals("Recife", updatedGarden.getLocation().getCity());
 	}
-	
-	private User createMockUser() {
-		CreateUserRequestBuilder builder = new CreateUserRequestBuilder()
-				.withUsername("elbardemoe")
-				.withEmail("elbardemoe@gmail.com")
-				.withPassword("pwd12345")
-				.withSurename("surename")
-				.withName("nombretest");
-				
-				CreateUserRequest createRequest = builder.build();
-				log.error("Por llamar a userService");
-				User user = userService.findOrCreate
-						(createRequest);
-				return user;
-	}
-
-	private Garden createMockGarden(){
-		User user = createMockUser();
-		Integer userId = user.getId();
-		CreateGardenRequest request = getMockGardenRequest(userId);
-		Garden garden = gardenService.createGarden(request, user);
-		return garden;
-	}
-
-	private CreateGardenRequest getMockGardenRequest(Integer userId) {
-		CreateGardenRequest request = new CreateGardenRequest();
-		request.setAddress("mockAddress");
-		request.setCity("mockCity");
-		request.setCountry("mockCountry");
-		request.setGardenName("mockGarden");
-		request.setLatitude("-34.7372732");
-		request.setLongitude("-58.40002");
-		request.setPatchList("");
-		request.setUserId(userId);
-		request.setWateringTimeWindow(SprinklerConstants.DEFAULT_WORKING_HOURS);
-		request.setWateringWorkingDays(SprinklerConstants.DEFAULT_WORKING_DAYS);
-		return request;
-	}
-
-	private HttpEntity<String> buildRequestEntity(String json) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.add(HttpHeaders.CONTENT_TYPE, "application/json");
-		HttpEntity <String> entity= new HttpEntity<String>(json, headers);
-		return entity;
-	}
-	
-
-	private String createURLWithPort(String uri) {
-		return "http://localhost:" + port + uri;
-	}
-
 	
 	
 }
