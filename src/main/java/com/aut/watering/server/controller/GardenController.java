@@ -64,7 +64,7 @@ public class GardenController {
 					.withMessage(ServerMessages.GARDEN_ERASED); 
 			// TODO Atrapar error por si falla la operacion, asi reintenta nuevamente.
 		}
-			
+		log.info("Result: " + responseBuilder.toString());
 		return ResponseEntity.status(status).body(responseBuilder.toString());	
 	} 
 	
@@ -90,7 +90,7 @@ public class GardenController {
 						.withMessage(ServerMessages.GARDEN_CREATED); 
 			}
 		}
-		log.error(MessageFormat.format("Result:{1}", responseBuilder.toString()));
+		log.info("Result: " + responseBuilder.toString());
 		return ResponseEntity.status(status).body(responseBuilder.toString());
 	}
 
@@ -100,9 +100,10 @@ public class GardenController {
 		HttpResponseBuilder responseBuilder = new HttpResponseBuilder();
 		String token;
 		int status=200;
-		log.info ("Creating garden with the following request: " + request.toString());
+		log.info ("Updating garden with the following request: " + request.toString());
 		Garden garden = gardenService.getGarden(gardenId);
-		if (garden != null){
+		log.error("Garden: " + garden.toString());
+		if (garden != null && garden.getId() > 0){
 			String validationMessage = gardenService.validateModifyRequest(request);
 			if(garden.getUser().getId() != userId){
 				status = HttpStatus.SC_UNAUTHORIZED;
@@ -113,10 +114,10 @@ public class GardenController {
 			else if(StringUtils.isNotBlank(validationMessage)){
 				status = HttpStatus.SC_BAD_REQUEST;
 				responseBuilder.withHttpCode(HttpStatus.SC_BAD_REQUEST)
-						.withMessage(validationMessage); 
-				
+						.withMessage(validationMessage); 			
 			}
 			else{
+				gardenService.modifyGarden(request, garden);
 				status = HttpStatus.SC_OK;
 				responseBuilder.withHttpCode(HttpStatus.SC_OK)
 						.withMessage(ServerMessages.GARDEN_MODIFIED); 
@@ -126,8 +127,9 @@ public class GardenController {
 			status = HttpStatus.SC_NOT_FOUND;
 			responseBuilder.withHttpCode(HttpStatus.SC_NOT_FOUND)
 					.withMessage(ServerMessages.GARDEN_NOT_FOUND); 
+
 		}
-		log.error(MessageFormat.format("Result:{1}", responseBuilder.toString()));
+		log.info("Result:" + responseBuilder.toString());
 		return ResponseEntity.status(status).body(responseBuilder.toString());
 	}
 
