@@ -1,8 +1,13 @@
 package com.aut.watering.server.controller;
 
 import java.text.MessageFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.aut.watering.server.builder.HttpResponseBuilder;
+import com.aut.watering.server.constants.SprinklerConstants;
 import com.aut.watering.server.data.DeleteSprinklerRequest;
 import com.aut.watering.server.data.ServerMessages;
 import com.aut.watering.server.data.SprinklerRequest;
@@ -48,9 +54,9 @@ public class SprinkerController {
 		HttpResponseBuilder responseBuilder = new HttpResponseBuilder();
 		String token;
 		int status;
-		log.error ("Creating sprinkler with the following request: " + request.toString());
+		log.info ("Creating sprinkler with the following request: " + request.toString());
 		Garden garden = gardenService.getGarden(gardenId);
-		if (garden!=null){
+		if (garden!=null && garden.getUser().getId() == userId){
 			if (sprinklerService.validate(request)){
 				status = HttpStatus.SC_CREATED;
 				sprinklerService.save(request);
@@ -59,7 +65,6 @@ public class SprinkerController {
 				.withMessage(ServerMessages.SPRINKLER_CREATED);
 			}
 			else{
-				log.error("WateringTime: " + propertyService.getPropertyAsInteger("max.watering.time"));
 				responseBuilder
 				.withHttpCode(HttpStatus.SC_BAD_REQUEST)
 				.withMessage(MessageFormat.format( ServerMessages.SPRINKLER_BAD_REQUEST,
@@ -78,17 +83,18 @@ public class SprinkerController {
 		return ResponseEntity.status(status).body(responseBuilder.toString());
 	}
 
-	@RequestMapping( consumes = "application/json", produces = "application/json", value = "/garden/{id}/patch", method=RequestMethod.DELETE)
+	@RequestMapping( produces = "application/json", value = "/garden/{gardenId}/patch", method=RequestMethod.DELETE)
 	@ResponseBody
-	public ResponseEntity<?> deleteSprinkler(@RequestBody DeleteSprinklerRequest request, @PathVariable Integer gardenId){
+	public ResponseEntity<?> deleteSprinkler( @PathVariable Integer gardenId, @RequestParam Integer patchId, @RequestParam Integer userId){
 		HttpResponseBuilder responseBuilder = new HttpResponseBuilder();
+		DeleteSprinklerRequest request = null;
 		String token;
 		int status;
-		log.info ("Deleting sprinkler with the following request: " + request.toString());
-		log.error ("Creating sprinkler with the following request: " + request.toString());
-		Patch sprinkler = sprinklerService.getSprinkler(request.getPatchId());
+		log.info ("Deleting sprinkler with the following request: patchId: " + patchId + " - userId: " + userId + " - gardenId: " + gardenId);
+		Integer requestPatchId = request != null ? request.getPatchId() : patchId;
+		Patch sprinkler = sprinklerService.getSprinkler(requestPatchId);
 
-		if (sprinklerService.validateDeleteRequest(request, gardenId)){
+		if  (sprinklerService.validateDeleteRequest(patchId, gardenId, userId)){
 			status = HttpStatus.SC_OK;
 			sprinklerService.delete(sprinkler);
 			responseBuilder
@@ -102,19 +108,25 @@ public class SprinkerController {
 			status = HttpStatus.SC_NOT_FOUND;
 		}
 		
-		log.error("Result:{1}" + responseBuilder.toString());
+		log.info("Result: " + responseBuilder.toString());
 		return ResponseEntity.status(status).body(responseBuilder.toString());
 		
 	}
 
-	@RequestMapping( consumes = "application/json", produces = "application/json", value = "/garden/{id}/patch", method=RequestMethod.PUT)
+	@RequestMapping( consumes = "application/json", produces = "application/json", value = "/garden/{gardenId}/patch", method=RequestMethod.PUT)
 	@ResponseBody
 	public ResponseEntity<?> modifySprinkler(@RequestBody SprinklerRequest request, @PathVariable Integer gardenId){
 		HttpResponseBuilder responseBuilder = new HttpResponseBuilder();
 		String token;
 		int status;
 		log.info ("Modifying sprinkler with the following request: " + request.toString());
-		Patch sprinkler = sprinklerService.getSprinkler(request.getPatchCode());
+		Patch sprinkler;
+		if (StringUtils.isNotBlank(request.getPatchCode())) {
+			sprinkler = sprinklerService.getSprinkler(request.getPatchCode());	
+		}
+		else {
+			sprinkler = sprinklerService.getSprinkler(request.getPatchId());
+		}
 		
 		if (sprinkler != null){
 			if (sprinklerService.validateModify(request)){
@@ -137,18 +149,18 @@ public class SprinkerController {
 			status = HttpStatus.SC_NOT_FOUND;
 		}
 				
-		log.error("Result: " + responseBuilder.toString());
+		log.info("Result: " + responseBuilder.toString());
 		return ResponseEntity.status(status).body(responseBuilder.toString());
 	}	
 	
-	@RequestMapping(produces = "application/json", value = "/garden/$id/patch?patchId=parchId", method=RequestMethod.GET)
+	@RequestMapping(produces = "application/json", value = "/garden/{gardenId}/patch", method=RequestMethod.GET)
 	@ResponseBody
-	public ResponseEntity<?> getSprinklerStatus(@RequestParam String patchCode,  @PathVariable Integer gardenId){
+	public ResponseEntity<?> getSprinklerStatus(@RequestParam Integer patchId,  @PathVariable Integer gardenId){
 		HttpResponseBuilder responseBuilder = new HttpResponseBuilder();
 		String token;
 		int status;
-		log.info ("Getting sprinkler with the following request: " + patchCode);
-		Patch sprinkler = sprinklerService.getSprinkler(patchCode);
+		log.info ("Getting sprinkler with the following request: " + patchId);
+		Patch sprinkler = sprinklerService.getSprinkler(patchId);
 		if (sprinkler != null){
 			AvailableSprinklerStatus sprinklerStatus = AvailableSprinklerStatus.getFromDescription(sprinkler.getStatus());
 			String message = sprinklerService.getSprinklerStatusResponse(sprinklerStatus);
@@ -162,11 +174,11 @@ public class SprinkerController {
 			.withMessage( ServerMessages.SPRINKLER_NOT_FOUND);			
 			status = HttpStatus.SC_NOT_FOUND;
 		}
-		log.error(MessageFormat.format("Result: patchCode: {1}- response: ", patchCode)  + responseBuilder.toString());
+		log.info(MessageFormat.format("Result: patchCode: {1}- response: ", patchId)  + responseBuilder.toString());
 		return ResponseEntity.status(status).body(responseBuilder.toString());
 	}
 	
-	@RequestMapping( consumes = "application/json", produces = "application/json", value = "/garden/{id}/patch/checkActivation", method=RequestMethod.PUT)
+	@RequestMapping( consumes = "application/json", produces = "application/json", value = "/garden/{gardenId}/patch/checkActivation", method=RequestMethod.POST)
 	@ResponseBody
 	public ResponseEntity<?> shouldActivateSprinkler(@RequestBody WaterRequest request,  @PathVariable Integer gardenId){
 		HttpResponseBuilder responseBuilder = new HttpResponseBuilder();
@@ -174,10 +186,10 @@ public class SprinkerController {
 		int status;
 		boolean activationResult = false;
 		log.info ("Check sprinklier activation with following request: " + request.toString());
-		Patch sprinkler = sprinklerService.getSprinkler(request.getPatchCode());
+		Patch sprinkler = sprinklerService.getSprinkler(request.getPatchId());
 		if (sprinkler != null){
-			
-			activationResult = sprinklerService.shouldActivateSprinkler(sprinkler, request.getCurrentHumidity(), request.getNextSchedulledCheck());
+			DateTime nextSchedulledDate = DateTime.parse(request.getNextDateTimeCheck(), DateTimeFormat.forPattern(SprinklerConstants.SPRINKLER_DATE_FORMAT));
+			activationResult = sprinklerService.shouldActivateSprinkler(sprinkler, request.getCurrentHumidity(), nextSchedulledDate.toDate());
 			responseBuilder
 			.withHttpCode(HttpStatus.SC_OK)
 			.withMessage(getStatusMesage(activationResult) );			
@@ -189,7 +201,7 @@ public class SprinkerController {
 			.withMessage( ServerMessages.SPRINKLER_NOT_FOUND);			
 			status = HttpStatus.SC_NOT_FOUND;
 		}
-		log.error(MessageFormat.format("Activation Result: patchCode: {1} - response: ", activationResult) + responseBuilder.toString());
+		log.info(MessageFormat.format("Activation Result: patchCode: {1} - response: ", activationResult) + responseBuilder.toString());
 		return ResponseEntity.status(status).body(responseBuilder.toString());
 	}
 	private String getStatusMesage(boolean status){

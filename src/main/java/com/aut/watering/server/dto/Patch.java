@@ -22,7 +22,7 @@ public class Patch implements Serializable{
 	@Column(name="id")
 	private Integer id;
 	private String patchCode;
-	private float humidityThreshold;
+	private Float humidityThreshold;
 	private Float criticalHumidity;
 	private Float humidity;
 	private String type;
@@ -45,10 +45,10 @@ public class Patch implements Serializable{
 	public void setPatchCode(String patchCode) {
 		this.patchCode = patchCode;
 	}
-	public float getHumidityThreshold() {
+	public Float getHumidityThreshold() {
 		return humidityThreshold;
 	}
-	public void setHumidityThreshold(float humidityThreshold) {
+	public void setHumidityThreshold(Float humidityThreshold) {
 		this.humidityThreshold = humidityThreshold;
 	}
 	public float getCriticalHumidity() {
@@ -81,4 +81,24 @@ public class Patch implements Serializable{
 	public void setHumidity(Float humidity) {
 		this.humidity = humidity;
 	}
+
+	public void setGarden(Garden garden) {
+		this.garden = garden;
+	}
+	
+	public Garden getGarden() {
+		return this.garden;
+	}
+	public String toString() {
+		return "id: " + this.getId() +
+		"patchCode: " + this.patchCode +
+		"humidityThreshold: " + this.humidityThreshold + 
+		"criticalHumidity: " + this.criticalHumidity +
+		"humidity: " + this.humidity + 
+		"type: " + this.type +
+		"wateringTime: " + this.wateringTime +
+		"gardenId: " + this.getGarden().getId() + 
+		"status: " + this.status;
+	}
+	
 }

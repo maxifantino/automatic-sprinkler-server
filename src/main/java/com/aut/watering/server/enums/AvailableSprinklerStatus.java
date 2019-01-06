@@ -2,14 +2,16 @@ package com.aut.watering.server.enums;
 
 public enum AvailableSprinklerStatus {
 	
-	INACTIVE(0),
-	ACTIVE(1);
+	INACTIVE(0, "inactive"),
+	ACTIVE(1, "active");
 
 	public int statusCode;
+	public String description;
 	
-	private AvailableSprinklerStatus(int status)
+	private AvailableSprinklerStatus(int status, String description)
 	{
 		this.statusCode = status;
+		this.description = description;
 	}
 	
 	public static AvailableSprinklerStatus getFromId(int id){
@@ -24,4 +26,11 @@ public enum AvailableSprinklerStatus {
 		return this.statusCode;
 	}
 	
+	public String toString() {
+		return this.description;
+	}
+	
+	static public boolean validate(String status) {
+		return INACTIVE.toString().equals(status) || ACTIVE.toString().equals(status);
+	}
 }

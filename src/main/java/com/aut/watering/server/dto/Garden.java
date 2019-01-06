@@ -94,6 +94,13 @@ public class Garden implements Serializable{
 		builder.append("location:" +this.getLocation().toString() + ", ");
 		builder.append("workingDays:" +this.getWorkingDays() + ", ");
 		builder.append("timeWindow:" +this.getWorkingTimeWindow() + ", ");
+		builder.append("sprinklers: [");
+		if (patches != null) {
+			for(Patch sprinkler: patches) {
+				builder.append(sprinkler.toString() + ",");
+			}		
+		}
+		builder.append("]");
 		return builder.toString();
 	}
 

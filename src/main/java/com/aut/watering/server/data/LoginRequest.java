@@ -20,7 +20,7 @@ public class LoginRequest {
 	@Override
 	public String toString() {
 		StringBuilder output = new StringBuilder();
-		output.append("userName:");
+		output.append("username:");
 		output.append(username);
 		output.append(",");
 		output.append("password:");

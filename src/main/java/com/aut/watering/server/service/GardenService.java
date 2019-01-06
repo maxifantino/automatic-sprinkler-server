@@ -13,6 +13,7 @@ import com.aut.watering.server.constants.SprinklerConstants;
 import com.aut.watering.server.data.CreateGardenRequest;
 import com.aut.watering.server.data.ModifyGardenRequest;
 import com.aut.watering.server.data.ServerMessages;
+import com.aut.watering.server.data.SprinklerRequest;
 import com.aut.watering.server.dto.Garden;
 import com.aut.watering.server.dto.Location;
 import com.aut.watering.server.dto.Patch;
@@ -23,12 +24,15 @@ import com.aut.watering.server.helper.GsonHelper;
 public class GardenService {
 
 	@Autowired
+	private SprinklerDao sprinklerDao;
+
+	@Autowired
 	private GardenDao gardenDao;
 	
 	@Autowired
 	private LocationDao locationDao;
 		
-	private Logger log = LoggerFactory.getLogger(UserService.class);
+	private Logger log = LoggerFactory.getLogger(GardenService.class);
 	
 	public Garden getGarden(Integer gardenId){
 		return gardenDao.getGarden(gardenId);
@@ -60,19 +64,13 @@ public class GardenService {
 			StringUtils.isBlank(request.getCountry())){
 			valid = false;
 		}
-		log.error("request: " + request.toString());
-		log.error("1erValidate : " + valid);
 		checkDefaultValues(request);
 		if (!validateTimeWindow(request.getWateringTimeWindow())){
 			valid = false;
-		}
-		log.error("2d0Validate : " + valid);
-	
+		}	
 		if (!validateWeekDays(request.getWateringWorkingDays())){
 			valid = false;
 		}
-	
-		log.error("3erValidate : " + valid);
 		return valid;
 	}
 	
@@ -86,12 +84,10 @@ public class GardenService {
 	}
 	
 	private boolean validateWeekDays(String weekDays){
-		log.error(weekDays);
 		return StringUtils.isBlank(weekDays) || weekDays.matches("\\[(([0-7](,)?){1,7})\\]");
 	}
 	
 	private boolean validateTimeWindow (String timewindow){
-		log.error(timewindow);
 		return StringUtils.isBlank(timewindow) || timewindow.matches("\\{\"from\":.*[0-9]*,.*\"to\":.*[0-9]*\\}");
 	}
 	
@@ -116,13 +112,15 @@ public class GardenService {
 		.withLatitude(request.getLatitude())
 		.withLongitude(request.getLongitude())
 		.withAddress(request.getAddress()).build();
-		log.error ("Hooolis");
 		locationDao.saveLocation(location);
 		garden.setLocation(location);
-		garden.setPatches(buildPatchs(request.getPatchList()));
-		log.error("Llegue 5");
-		
-		gardenDao.saveGarden(garden);
+		garden.setPatches(buildPatchs(request.getPatchList()));		
+		try {
+			gardenDao.saveGarden(garden);
+		}
+		catch (Exception e) {
+			throw e;
+		}
 		// TODO: manejar errores.
 		return garden;
 	}
@@ -142,7 +140,6 @@ public class GardenService {
 		}
 		
 		checkGardenLocationUpdate(garden, request);
-		log.error("Merged garden: " + garden.toString());
 		gardenDao.mergeGarden(garden);
 		return garden;
 	}
@@ -180,6 +177,17 @@ public class GardenService {
 		if (shouldModify) {
 			gardenDao.mergeLocation(location);
 		}
+	}
+	
+	public void addSprinkler(SprinklerRequest request, Garden garden) {
+		Patch patch = new Patch();
+		patch.setCriticalHumidity(request .getHumidityCritical());
+		patch.setHumidityThreshold(request.getHumidityThreshold());
+		patch.setPatchCode(request.getPatchCode());
+		patch.setWateringTime(request.getWateringSeconds());
+		patch.setType(request.getType());
+		patch.setGarden(garden);
+		sprinklerDao.saveSprinkler(patch);
 	}
 	
 }

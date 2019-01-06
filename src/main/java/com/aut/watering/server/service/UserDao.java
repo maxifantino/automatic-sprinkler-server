@@ -29,8 +29,6 @@ public class UserDao {
 		Query query = session.createQuery("from User where userName= :username");
 		query.setParameter("username", username);
 		User user = (User)query.uniqueResult();
-		log.error("User: " + username);
-		log.error("User: " + user.toString());
 		return user;
 	}
 	
@@ -40,7 +38,6 @@ public class UserDao {
 		session.persist(user);
 		tx.commit();
 		session.close();
-		log.error ("USer: " + user.getUsername());
 	}
 
 	public User getUser(Integer userId) {

@@ -25,15 +25,13 @@ public class UserService {
 	
 	private Logger log = LoggerFactory.getLogger(UserService.class);
 	
-	public boolean validateLogin(LoginRequest request){ // la papota esta aca.
-		log.error("validate: " + request.toString());
+	public boolean validateLogin(LoginRequest request){
 		return (StringUtils.isNotBlank(request.getUsername()) 
 				&& StringUtils.isNotBlank(request.getPassword())) ? true : false;	
 	}
 
 	public String validateUserRequest(CreateUserRequest request){
 		String message = null;
-		log.info("getUsername: " + request.getUsername());
 		if (!validatorService.validateEmail(request.getEmail())){
 			message = ServerMessages.EMAIL_NOT_VALID;
 		}
@@ -51,12 +49,9 @@ public class UserService {
 	
 	public String login (LoginRequest request){
 		boolean result = false;
-		log.error("doing login....." + request.toString());
 		User populatedUser = userDao.getUser(request.getUsername());
-		log.error("Populated user: " + populatedUser.toString());
 		result = (populatedUser != null) ? 
 				request.getPassword().equals(populatedUser.getPassword()) : false;		
-		log.error("Result: " + result);
 		return result ? tokenService.getToken() : StringUtils.EMPTY;
 	}
 	
@@ -72,24 +67,20 @@ public class UserService {
 	
 	public User createUser (CreateUserRequest createRequest){
 		// primero chequeo que el usuario no exista anteriormente
-		log.error("CreateRequest: " + createRequest.toString());
 		User user = new User();
 		user.setEmail(createRequest.getEmail());
 		user.setName(createRequest.getName());
 		user.setPassword(createRequest.getPassword());
 		user.setSurname(createRequest.getSurname());
 		user.setUsername(createRequest.getUsername());
-		log.error("Por salvar.... " + userDao);
 		userDao.saveUser(user);
 		return user;
 	}
 
 	public User findOrCreate(CreateUserRequest createRequest) {
 		User user = null;
-		try{
-			user = getUser(createRequest.getUsername());
-		}
-		catch (Exception e){
+		user = getUser(createRequest.getUsername());
+		if (user == null) {
 			user = createUser(createRequest);
 		}
 		return user;

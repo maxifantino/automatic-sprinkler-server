@@ -9,7 +9,14 @@ public class SprinklerRequest {
 	private String type;
 	private String status;
 	private Float humidity;
+	private Integer patchId;
 	
+	public Integer getPatchId() {
+		return patchId;
+	}
+	public void setPatchId(Integer patchId) {
+		this.patchId = patchId;
+	}
 	public String getStatus() {
 		return status;
 	}

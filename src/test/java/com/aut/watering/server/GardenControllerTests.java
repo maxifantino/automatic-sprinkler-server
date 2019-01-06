@@ -70,7 +70,6 @@ public class GardenControllerTests extends WateringTests{
 			ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort(uri, port), entity, String.class);
 			resultStatus = response.getStatusCode();
 		} catch (Exception e) {
-			log.error("No deberia pasar");
 			log.error("Exception e", e);
 		}
 		assertTrue(resultStatus.is4xxClientError());			
@@ -98,7 +97,6 @@ public class GardenControllerTests extends WateringTests{
 			ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort(uri, port), entity, String.class);
 			resultStatus = response.getStatusCode();
 		} catch (Exception e) {
-			log.error("No deberia pasar");
 			log.error("Exception e", e);
 		}
 		assertTrue(resultStatus.is4xxClientError());			
@@ -126,7 +124,6 @@ public class GardenControllerTests extends WateringTests{
 			ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort(uri, port), entity, String.class);
 			resultStatus = response.getStatusCode();
 		} catch (Exception e) {
-			log.error("No deberia pasar");
 			log.error("Exception e", e);
 		}
 		assertTrue(resultStatus.is4xxClientError());			
@@ -148,16 +145,13 @@ public class GardenControllerTests extends WateringTests{
 			"\"longitude\": \"-58.400216715\","+ 
 			"\"wateringTimeWindow\": \"{'from':10, 'to':18}\" ,"+
 			"\"wateringWorkingDays\": \"[1,2,3,4,5,6]\"}";
-		log.error("Request: " + jsonRequest);
 		String uri = "/garden";
 		HttpEntity<String> entity = buildRequestEntity(jsonRequest);
 		HttpStatus resultStatus = HttpStatus.CONFLICT;
-		log.error("Por llamar al controller!!!!");
 		try {
 			ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort(uri, port), entity, String.class);
 			resultStatus = response.getStatusCode();
 		} catch (Exception e) {
-			log.error("No deberia pasar");
 			log.error("Exception e", e);
 		}
 		assertTrue(resultStatus.is2xxSuccessful());			
@@ -185,7 +179,6 @@ public class GardenControllerTests extends WateringTests{
 			ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort(uri, port), entity, String.class);
 			resultStatus = response.getStatusCode();
 		} catch (Exception e) {
-			log.error("No deberia pasar");
 			log.error("Exception e", e);
 		}
 		assertTrue(resultStatus.is2xxSuccessful());			
@@ -212,7 +205,6 @@ public class GardenControllerTests extends WateringTests{
 			ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort(uri, port), entity, String.class);
 			resultStatus = response.getStatusCode();
 		} catch (Exception e) {
-			log.error("No deberia pasar");
 			log.error("Exception e", e);
 		}
 		assertTrue(resultStatus.is2xxSuccessful());			
@@ -232,7 +224,6 @@ public class GardenControllerTests extends WateringTests{
 		try {
 			restTemplate.delete (deleteUrl);
 		} catch (Exception e) {
-			log.error("No deberia pasar");
 			log.error("Exception e", e);
 		}
 		assertNotNull(gardenService.getGarden(garden.getId()));
@@ -251,7 +242,6 @@ public class GardenControllerTests extends WateringTests{
 		try {
 			restTemplate.delete (deleteUrl);
 		} catch (Exception e) {
-			log.error("No deberia pasar");
 			log.error("Exception e", e);
 		}
 		assertNotNull(gardenService.getGarden(garden.getId()));			
@@ -267,10 +257,8 @@ public class GardenControllerTests extends WateringTests{
 		String uri = "/garden/" + garden.getId() +"?userId=" + userID;
 		URI deleteUrl = new URI(createURLWithPort(uri, port));
 		try {
-			log.error("Url: " + deleteUrl.toString());
 			restTemplate.delete (deleteUrl);
 		} catch (Exception e) {
-			log.error("No deberia pasar");
 			log.error("Exception e", e);
 		}
 		assertNull(gardenService.getGarden(garden.getId()));			
@@ -295,7 +283,6 @@ public class GardenControllerTests extends WateringTests{
 			URI putUrl = new URI(createURLWithPort(uri, port));
 			restTemplate.put(putUrl, entity);
 		} catch (Exception e) {
-			log.error("No deberia pasar");
 			log.error("Exception e", e);
 		}
 	
@@ -320,7 +307,6 @@ public class GardenControllerTests extends WateringTests{
 			 restTemplate.put(putUrl, entity);
 			
 		} catch (Exception e) {
-			log.error("No deberia pasar");
 			log.error("Exception e", e);
 		}
 		Garden updatedGarden = gardenService.getGarden(garden.getId());
@@ -339,11 +325,9 @@ public class GardenControllerTests extends WateringTests{
 			URI putUrl = new URI(createURLWithPort(uri, port));	
 			 restTemplate.put(putUrl, entity);
 		} catch (Exception e) {
-			log.error("No deberia pasar");
 			log.error("Exception e", e);
 		}
 		Garden updatedGarden = gardenService.getGarden(garden.getId());
-	log.error("UpdatedGarden: " + updatedGarden);
 		assertEquals("[1]", updatedGarden.getWorkingDays());
 	}
 
@@ -359,11 +343,9 @@ public class GardenControllerTests extends WateringTests{
 			URI putUrl = new URI(createURLWithPort(uri, port));	
 			restTemplate.put(putUrl, entity);
 		} catch (Exception e) {
-			log.error("No deberia pasar");
 			log.error("Exception e", e);
 		}
 		Garden updatedGarden = gardenService.getGarden(garden.getId());
-		log.error("Updated garden: " + updatedGarden);
 		assertEquals("JardinActualizado", updatedGarden.getName());
 	}
 
@@ -380,7 +362,6 @@ public class GardenControllerTests extends WateringTests{
 			URI putUrl = new URI(createURLWithPort(uri, port));	
 			restTemplate.put(putUrl, entity);
 		} catch (Exception e) {
-			log.error("No deberia pasar");
 			log.error("Exception e", e);
 		}
 		Garden updatedGarden = gardenService.getGarden(garden.getId());

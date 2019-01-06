@@ -2,13 +2,13 @@ package com.aut.watering.server.data;
 
 public class DeleteSprinklerRequest {
 	
-	private String patchId;
+	private Integer patchId;
 	private String userId;
 	
-	public String getPatchId() {
+	public Integer getPatchId() {
 		return patchId;
 	}
-	public void setPatchId(String patchId) {
+	public void setPatchId(Integer patchId) {
 		this.patchId = patchId;
 	}
 	public String getUserId() {
