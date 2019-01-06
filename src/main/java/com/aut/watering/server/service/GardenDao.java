@@ -30,12 +30,10 @@ public class GardenDao {
 	}
 	
 	public void saveGarden (Garden garden){
-		log.error ("Llegueeeeee dao" + garden.toString());
 		Session session = entityManagerFactory.unwrap(SessionFactory.class).openSession();
 		Transaction tx = session.beginTransaction();
 		session.persist(garden);
 		tx.commit();
-		log.error("MaxiDao: " + garden.toString());
 		session.close();
 	}
 	
@@ -64,14 +62,10 @@ public class GardenDao {
 	}
 
 	public void deleteGarden (Garden garden){
-		log.error("Llegue!!!");
 		Session session = entityManagerFactory.unwrap(SessionFactory.class).openSession();
 		Transaction tx = session.beginTransaction();		
 		session.remove(session.contains(garden) ? garden : session.merge(garden));
-		
-		tx.commit();
-		log.error("comitee!!!");
-		
+		tx.commit();		
 		session.close();
 	}
 	

@@ -33,7 +33,6 @@ public class UserController {
 		HttpResponseBuilder responseBuilder = new HttpResponseBuilder();
 		String token;
 		int status;
-		log.info ("Login....User: " + loginRequest.toString());
 		if (userService.validateLogin(loginRequest)){
 			token = userService.login(loginRequest);
 			if (StringUtils.isNotBlank(token)){
@@ -65,27 +64,18 @@ public class UserController {
 		log.info("Creating userRequest:" + userRequest.toString());
 
 		String httpMessage = userService.validateUserRequest(userRequest);
-		log.error("Valide");
-		log.error("httpMessage: " + httpMessage);
 		if (StringUtils.isEmpty(httpMessage)){
-			log.error("isnotempty");
-
 			if (userService.getUser(userRequest.getUsername()) != null){
-				log.error("lo encontre???");
 				httpCode = HttpStatus.SC_CONFLICT;
 				httpMessage = MessageFormat.format(ServerMessages.USER_ALREADY_CREATED, userRequest.getUsername());		
 			}
-			else{
-				log.error("intento crearlo");
-				
+			else{				
 				// creo al usuario
 				User createdUser = userService.createUser(userRequest);
 				populateCreateResponse (createdUser, httpCode, httpMessage);
 			}
 		}
-		else{
-			log.error("Bad request");
-			
+		else{			
 			httpCode = HttpStatus.SC_BAD_REQUEST;
 		}
 

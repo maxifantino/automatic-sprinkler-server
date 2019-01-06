@@ -19,13 +19,13 @@ public class WateringTests{
 	
 	@Autowired
 	protected UserService userService;
-
+	
 	
 	protected User createMockUser() {
 		CreateUserRequestBuilder builder = new CreateUserRequestBuilder()
 				.withUsername("elbardemoe")
 				.withEmail("elbardemoe@gmail.com")
-				.withPassword("pwd12345")
+				.withPassword("pwd123456")
 				.withSurename("surename")
 				.withName("nombretest");
 				

@@ -2,14 +2,15 @@ package com.aut.watering.server.data;
 
 public class WaterRequest {
 	
-	public String patchCode;
+	public Integer patchId;
 	public Float currentHumidity;
-	public Integer nextSchedulledCheck;
-	public String getPatchCode() {
-		return patchCode;
+	public String nextDateTimeCheck;
+	
+	public Integer getPatchId() {
+		return patchId;
 	}
-	public void setPatchCode(String patchCode) {
-		this.patchCode = patchCode;
+	public void setPatchId(Integer patchId) {
+		this.patchId = patchId;
 	}
 	public Float getCurrentHumidity() {
 		return currentHumidity;
@@ -17,12 +18,13 @@ public class WaterRequest {
 	public void setCurrentHumidity(Float currentHumidity) {
 		this.currentHumidity = currentHumidity;
 	}
-	public Integer getNextSchedulledCheck() {
-		return nextSchedulledCheck;
-	}
-	public void setNextSchedulledCheck(Integer nextSchedulledCheck) {
-		this.nextSchedulledCheck = nextSchedulledCheck;
+	
+	public String getNextDateTimeCheck() {
+		return nextDateTimeCheck;
 	}
 	
+	public void setNextDateTimeCheck(String nextDateTimeCheck) {
+		this.nextDateTimeCheck = nextDateTimeCheck;
+	}
 	
 }

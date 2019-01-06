@@ -6,14 +6,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -21,7 +19,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.aut.watering.server.builder.CreateUserRequestBuilder;
 import com.aut.watering.server.controller.UserController;
 import com.aut.watering.server.data.CreateUserRequest;
-import com.aut.watering.server.service.UserService;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -39,7 +36,7 @@ public class UserControllerTests extends WateringTests{
 	private int port;
 	
 	private TestRestTemplate restTemplate = new TestRestTemplate();
-				
+		
 	@Test
 	public void getNotFoundWhenLoginWithNonexistentUser() throws Exception {
 		String jsonRequest = "{\"username:\"esteusuarioNoExiste\",\"password\":\"pwd\"}";
@@ -50,7 +47,6 @@ public class UserControllerTests extends WateringTests{
 			ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort(uri,port), entity, String.class);
 			resultStatus = response.getStatusCode();
 		} catch (Exception e) {
-			log.error("No deberia pasar");
 			log.error("Exception e", e);
 		}
 		assertTrue(resultStatus.is4xxClientError());			
@@ -67,43 +63,11 @@ public class UserControllerTests extends WateringTests{
 			ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort(uri,port), entity, String.class);
 			resultStatus = response.getStatusCode();
 		} catch (Exception e) {
-			log.error("No deberia pasar");
 			log.error("Exception e", e);
 		}
 		assertTrue(resultStatus.is4xxClientError());			
 	}
 	
-	@Test
-	public void doSuccessfullLoginWithexistentUser() {
-		// creo el usuario
-		CreateUserRequestBuilder builder = new CreateUserRequestBuilder()
-		.withUsername("elbardemoe")
-		.withEmail("elbardemoe@gmail.com")
-		.withPassword("pwd12345")
-		.withSurename("surename")
-		.withName("name");
-		
-		CreateUserRequest createRequest = builder.build();
-		log.error("Por llamar a userService");
-		userService.createUser(createRequest);
-		
-		String jsonRequest = "{\"username\":\"elbardemoe\",\"password\":\"pwd12345\"}";
-		String uri = "/user/login";
-		HttpEntity<String> entity = buildRequestEntity(jsonRequest);
-		HttpStatus resultStatus = HttpStatus.INTERNAL_SERVER_ERROR;
-
-		try {
-			log.error("About to login");
-			ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort(uri,port), entity, String.class);
-			resultStatus = response.getStatusCode();
-			log.error("Status: " + resultStatus);
-		} catch (Exception e) {
-			log.error("No deberia pasar");
-			log.error("Exception e", e);
-		}
-		assertTrue(resultStatus.is2xxSuccessful());			
-	}
-	 
 	@Test
 	public void cantCreateUserWithNoUsername() throws Exception{
 		String jsonRequest = "{\"name\":\"juan\",\"surname\":\"perez\",\"password\":\"pwd12345\"}";
@@ -114,7 +78,7 @@ public class UserControllerTests extends WateringTests{
 			ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort(uri,port), entity, String.class);
 			resultStatus = response.getStatusCode();
 		} catch (Exception e) {
-			log.error("No deberia pasar");
+			log.error("Exception e", e);
 		}
 		assertTrue (resultStatus.is4xxClientError());
 	}
@@ -129,7 +93,7 @@ public class UserControllerTests extends WateringTests{
 			ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort(uri,port), entity, String.class);
 			resultStatus = response.getStatusCode();
 		} catch (Exception e) {
-			log.error("No deberia pasar");
+			log.error("Exception e", e);
 		}
 		assertTrue (resultStatus.is4xxClientError());
 	
@@ -145,27 +109,25 @@ public class UserControllerTests extends WateringTests{
 			ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort(uri,port), entity, String.class);
 			resultStatus = response.getStatusCode();
 		} catch (Exception e) {
-			log.error("No deberia pasar");
+			log.error("Exception e", e);
 		}
 		assertTrue (resultStatus.is4xxClientError());
-	
 	}
 	
 	@Test
 	public void cantCreateUserAlreadyRegisteredBefore() {
 		// creo el usuario
 		CreateUserRequestBuilder builder = new CreateUserRequestBuilder()
-		.withUsername("elbardemoe")
+		.withUsername("juancito813")
 		.withEmail("elbardemoe@gmail.com")
 		.withPassword("pwd12345")
 		.withSurename("surename")
 		.withName("name");
 		
 		CreateUserRequest createRequest = builder.build();
-		log.error("Por llamar a userService");
 		userService.createUser(createRequest);
 
-		String jsonRequest = "{\"email\":\"elbardemoe@gmail.com\", \"elbardemoe\":\"juancito213\",\"surname\":\"perez\",\"password\":\"pwd12345\"}";
+		String jsonRequest = "{\"email\":\"elbardemoe@gmail.com\",\"name\":\"juan\", \"username\":\"juancito813\",\"surname\":\"perez\",\"password\":\"pwd123465\"}";
 		String uri = "/user/create";
 		HttpEntity<String> entity = buildRequestEntity(jsonRequest);
 		HttpStatus resultStatus = HttpStatus.INTERNAL_SERVER_ERROR;
@@ -173,15 +135,15 @@ public class UserControllerTests extends WateringTests{
 			ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort(uri,port), entity, String.class);
 			resultStatus = response.getStatusCode();
 		} catch (Exception e) {
-			log.error("No deberia pasar");
+			log.error("Exception e", e);
 		}
-		assertTrue (resultStatus.is5xxServerError());
+		assertTrue (resultStatus.is4xxClientError());
 		
 	}
 
 	@Test
 	public void canCreateUserNotRegisteredBefore() {
-		String jsonRequest = "{\"email\":\"elbardemoe@gmail.com\", \"elbardemoe\":\"juancito213\",\"surname\":\"perez\",\"password\":\"pwd12345\"}";
+		String jsonRequest = "{\"email\":\"elbardemoe@gmail.com\", \"username\":\"juanvvcito213\",\"name\":\"juan\",\"surname\":\"perez\",\"password\":\"pwd123456\"}";
 		String uri = "/user/create";
 		HttpEntity<String> entity = buildRequestEntity(jsonRequest);
 		HttpStatus resultStatus = HttpStatus.INTERNAL_SERVER_ERROR;
@@ -189,12 +151,9 @@ public class UserControllerTests extends WateringTests{
 			ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort(uri,port), entity, String.class);
 			resultStatus = response.getStatusCode();
 		} catch (Exception e) {
-			log.error("No deberia pasar");
+			log.error("Exception e", e);
 		}
-		assertTrue (resultStatus.is5xxServerError());
-		
+		assertTrue (resultStatus.is2xxSuccessful());
 	}
-
-	
 
 }

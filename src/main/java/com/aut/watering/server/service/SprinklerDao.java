@@ -6,6 +6,8 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,8 @@ import com.aut.watering.server.dto.Patch;
 @Service
 public class SprinklerDao {
 
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
+	
 	@Autowired
 	private EntityManagerFactory entityManagerFactory;
 
@@ -45,7 +49,7 @@ public class SprinklerDao {
 	public void savePatch (Patch patch){
 		Session session = entityManagerFactory.unwrap(SessionFactory.class).openSession();
 		Transaction tx = session.beginTransaction();
-		session.persist(patch);
+		session.merge(patch);
 		tx.commit();
 		session.close();
 	}
@@ -53,7 +57,7 @@ public class SprinklerDao {
 	public void deleteSprinkler (Patch patch){
 		Session session = entityManagerFactory.unwrap(SessionFactory.class).openSession();
 		Transaction tx = session.beginTransaction();
-		session.delete(patch);
+		session.remove(session.contains(patch) ? patch : session.merge(patch));
 		tx.commit();
 		session.close();
 	}

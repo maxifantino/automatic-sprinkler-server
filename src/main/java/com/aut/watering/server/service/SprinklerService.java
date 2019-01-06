@@ -1,5 +1,6 @@
 package com.aut.watering.server.service;
 
+import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -35,16 +36,21 @@ public class SprinklerService {
 		return dao.getSprinkler(sprinklerCode);
 	}
 
+	public Patch getSprinkler(Integer sprinklerId){
+		return dao.getSprinkler(sprinklerId);
+	}
+	
 	public boolean validate (SprinklerRequest request){
 		boolean result = true;
-		result = validateHumidityCritical(request);
-		result = validateHumidityThreshold(request);
-		result = validateWateringTime(request);
+		result = result && validateHumidityThreshold(request);
+		result = result && validateHumidityCritical(request);
+		result = result && validateWateringTime(request);
 		return result;
 	}
 	
 	public boolean validateHumidityCritical(SprinklerRequest request){
-		return  request.getHumidityCritical() == null || (request.getHumidityCritical()< 100 && request.getHumidityCritical() > 0);
+		return  request.getHumidityCritical() == null || (request.getHumidityCritical()< 100 && request.getHumidityCritical() > 0
+				&& request.getHumidityCritical() < request.getHumidityThreshold());
 	}
 	
 	public boolean validateHumidityThreshold(SprinklerRequest request){
@@ -67,17 +73,16 @@ public class SprinklerService {
 		dao.saveSprinkler(patch);
 	}
 	
-	public boolean validateDeleteRequest(DeleteSprinklerRequest request, int gardenId){
-		boolean result = true;
-		Garden garden = gardenDao.getGarden(gardenId);
-		validatePatchId (garden.getPatches(), request.getPatchId());
-		return result;
+	public boolean validateDeleteRequest(Integer patchId, Integer gardenid, Integer userId){
+		Garden garden = gardenDao.getGarden(gardenid);
+		return garden.getUser().getId() == userId && validatePatchId (garden.getPatches(), patchId);
+		
 	}
 	
-	private boolean validatePatchId(List<Patch> patches, String  patchId){
+	private boolean validatePatchId(List<Patch> patches, Integer  patchId){
 		boolean found = false;
 		for (Patch patch : patches){
-			if ( patch.getPatchCode().equals(patchId)){
+			if ( patch.getId().equals(patchId)){
 				found = true;
 			}
 		}
@@ -90,35 +95,38 @@ public class SprinklerService {
 	
 	public void modify (SprinklerRequest request, Patch patch){
 		
-		if(request.getHumidityCritical()!= -1){
+		if(request.getHumidityCritical()!= null){
 			patch.setCriticalHumidity(request.getHumidityCritical());
 		}
 		
-		if(request.getHumidityThreshold()!= -1){
+		if(request.getHumidityThreshold()!= null){
 			patch.setHumidityThreshold(request.getHumidityThreshold());
 		}
 		
-		if(request.getWateringSeconds()!= -1){
+		if(request.getWateringSeconds()!= null){
 			patch.setWateringTime(request.getWateringSeconds());
+		}
+		if(request.getStatus()!= null){
+			patch.setStatus(request.getStatus());
 		}
 		dao.savePatch(patch);
 	}
 	
 	public boolean validateModify(SprinklerRequest request){
-		boolean result = false;
+		boolean result = true;
 
-		if(request.getHumidityCritical()!= -1){
+		if(request.getHumidityCritical()!= null){
 			result = validateHumidityCritical(request);
 		}
-		log.error ("Result: " + result);
-		if(request.getHumidityThreshold()!= -1){
+		if(request.getHumidityThreshold()!= null){
 			result = validateHumidityThreshold(request);
 		}
-		log.error ("Result: " + result);
-		if(request.getWateringSeconds()!= -1){
+		if(request.getWateringSeconds()!=null){
 			result = validateWateringTime(request);
 		}
-		log.error ("Result: " + result);
+		if(request.getStatus() != null) {
+			result = AvailableSprinklerStatus.validate(request.getStatus());
+		}
 		return result;
 	}
 	
@@ -126,10 +134,10 @@ public class SprinklerService {
 		JsonObject response = new JsonObject();
 		response.addProperty("response_code", sprinklerStatus.getId());
 		response.addProperty("response_status", sprinklerStatus.toString());
-		return response.getAsString();
+		return response.toString();
 	}
 	
-	public boolean shouldActivateSprinkler (Patch sprinkler, float currentHumidity, Integer nextCheck){
+	public boolean shouldActivateSprinkler (Patch sprinkler, float currentHumidity, Date nextCheck){
 		return activationService.checkActivation(sprinkler, currentHumidity, nextCheck);
 	}
 }

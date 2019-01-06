@@ -20,7 +20,6 @@ import com.aut.watering.server.builder.HttpResponseBuilder;
 import com.aut.watering.server.data.CreateGardenRequest;
 import com.aut.watering.server.data.ModifyGardenRequest;
 import com.aut.watering.server.data.ServerMessages;
-import com.aut.watering.server.data.SprinklerRequest;
 import com.aut.watering.server.dto.Garden;
 import com.aut.watering.server.dto.User;
 import com.aut.watering.server.service.GardenService;
@@ -45,7 +44,6 @@ public class GardenController {
 		int status;
 		log.info (MessageFormat.format("Garden delete request received: userId:{1},gardenId:{2}", Integer.toString(userId), Integer.toString(gardenId)));
 		Garden garden = gardenService.getGarden(gardenId); 
-		log.error("GARDENDELETE");
 		if (garden == null){
 			status = HttpStatus.SC_NOT_FOUND;
 			responseBuilder.withHttpCode(HttpStatus.SC_NOT_FOUND)
@@ -57,7 +55,6 @@ public class GardenController {
 					.withMessage(""); 
 		}
 		else{
-			log.error("Por llamar al metodo deleteGarden");
 			gardenService.deleteGarden(garden);
 			status = HttpStatus.SC_OK;
 			responseBuilder.withHttpCode(HttpStatus.SC_OK)
@@ -102,7 +99,6 @@ public class GardenController {
 		int status=200;
 		log.info ("Updating garden with the following request: " + request.toString());
 		Garden garden = gardenService.getGarden(gardenId);
-		log.error("Garden: " + garden.toString());
 		if (garden != null && garden.getId() > 0){
 			String validationMessage = gardenService.validateModifyRequest(request);
 			if(garden.getUser().getId() != userId){
