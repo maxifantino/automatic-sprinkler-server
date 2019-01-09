@@ -1,5 +1,7 @@
 package com.aut.watering.server.service;
 
+import java.util.List;
+
 import javax.persistence.EntityManagerFactory;
 
 import org.hibernate.Query;
@@ -28,7 +30,15 @@ public class GardenDao {
 		Garden garden = (Garden)query.uniqueResult();
 		return garden;
 	}
-	
+    
+    public List <Garden> getGardenByUserId (Integer userId){
+		Session session = entityManagerFactory.unwrap(SessionFactory.class).openSession();
+		Query query = session.createQuery("from Garden where user_id= :userId");
+		query.setParameter("userId", userId);
+		List<Garden> gardens = (List<Garden>)query.getResultList();
+		return gardens;
+	}
+    
 	public void saveGarden (Garden garden){
 		Session session = entityManagerFactory.unwrap(SessionFactory.class).openSession();
 		Transaction tx = session.beginTransaction();

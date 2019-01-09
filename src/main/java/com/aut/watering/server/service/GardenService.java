@@ -38,6 +38,10 @@ public class GardenService {
 		return gardenDao.getGarden(gardenId);
 	}
 
+	public List<Garden> getGardenByUserId(Integer userId){
+		return gardenDao.getGardenByUserId(userId);
+	}
+
 	public boolean validateGardenDelete(Garden garden, Integer userId){
 		boolean result = true;
 		if (garden == null || garden.getUser().getId() != userId){

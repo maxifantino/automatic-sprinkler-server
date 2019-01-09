@@ -9,6 +9,7 @@ public class ServerMessages {
 	public static final String PASSWORD_NOT_VALID = "La contraseña debe tener al menos 8 caracteres válidos: A-Z a-z 0-9 .";
 	public static final String USER_ALREADY_CREATED = "El usuario {1} ya fue creado";
 	public static final String USER_CREATED = "Usuario creado";
+	public static final String USER_DOESNOT_HAVE_GARDENS = "El usuario no posee jardines.";
 	public static final String USER_CREATION_ERROR = "Error creando usuario. Reintente nuevamente";
 	public static final String GARDEN_NOT_FOUND = "Jardin inexistente";
 	public static final String GARDEN_ERASED = "Jardin eliminado exitosamente";
